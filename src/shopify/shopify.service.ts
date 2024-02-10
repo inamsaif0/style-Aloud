@@ -5,7 +5,7 @@
 
 // @Injectable()
 // export class ShopifyService {
-  // private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+
 //   private readonly axiosInstance: AxiosInstance;
 
 //   constructor() {
@@ -63,7 +63,7 @@ import { CollectionsDto } from './dto/create-shopify.dto';
 @Injectable()
 export class ShopifyService {
   private shopify:any;
-  private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+
   private readonly axiosInstance: AxiosInstance;
 
   constructor(private readonly configService: ConfigService) {
