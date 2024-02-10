@@ -25,19 +25,19 @@
 //     return this.shopifyService.checkout(checkoutDto);
 //   }
 
-//   @Get('/get-collections')
-//   @UseInterceptors(FileInterceptor(''))
-//   getAllCollections(): any {
-//     return this.shopifyService.getCollections();
-//   }
+  // @Get('/get-collections')
+  // @UseInterceptors(FileInterceptor(''))
+  // getAllCollections(): any {
+  //   return this.shopifyService.getCollections();
+  // }
 
-//   @Post('/get-collection-products')
-//   @UseInterceptors(FileInterceptor(''))
-//   getCollectionProducts(
-//     @Body() dto: CollectionsDto
-//   ): any {
-//     return this.shopifyService.getCollectionsProducts(dto);
-//   }
+  // @Post('/get-collection-products')
+  // @UseInterceptors(FileInterceptor(''))
+  // getCollectionProducts(
+  //   @Body() dto: CollectionsDto
+  // ): any {
+  //   return this.shopifyService.getCollectionsProducts(dto);
+  // }
 
   
 // }
@@ -45,11 +45,28 @@
 // shopify.controller.ts
 import { Controller, Post, Delete, Patch, Param, Body, HttpException, HttpStatus } from '@nestjs/common';
 import { ShopifyService } from './shopify.service';
+import { CollectionsDto } from './dto/create-shopify.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('shopify')
 export class ShopifyController {
   constructor(private readonly shopifyService: ShopifyService) {}
 
+
+  @Get('/get-collections')
+  @FileInterceptor(FileInterceptor(''))
+  getAllCollections(): any {
+    return this.shopifyService.getCollections();
+  }
+
+  @Post('/get-collection-products')
+  @FileInterceptor(FileInterceptor(''))
+  getCollectionProducts(
+    @Body() dto: CollectionsDto
+  ): any {
+    return this.shopifyService.getCollectionsProducts(dto);
+  }
+  
   @Post('register')
   async registerCustomer(@Body() customerData: any) {
     try {
@@ -95,3 +112,7 @@ export class ShopifyController {
     }
   }
 }
+function Get(arg0: string): (target: ShopifyController, propertyKey: "getAllCollections", descriptor: TypedPropertyDescriptor<() => any>) => void | TypedPropertyDescriptor<() => any> {
+  throw new Error('Function not implemented.');
+}
+
