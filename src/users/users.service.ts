@@ -14,6 +14,7 @@ import { join } from 'path';
 import { find } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { PetProfile } from 'src/libs/database/entities/pet-profile.entity';
+import axios from 'axios';
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -23,54 +24,136 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 export class UsersService {
   constructor(private jwtService: JwtService) { }
 
-  async signUp(dto: SignUpDto, files) {
-    // console.log(file)
-    if (dto.password != dto.confirm_password) {
-      throw new HttpException('please enter the matched password', HttpStatus.BAD_REQUEST);
+  // async signUp(dto: SignUpDto, files) {
+  //   // console.log(file)
+  //   if (dto.password != dto.confirm_password) {
+  //     throw new HttpException('please enter the matched password', HttpStatus.BAD_REQUEST);
 
-    }
-    let allFiles = [];
-    if (files) {
-      files.media.forEach((val) => {
-        let splitUrl = val?.mimetype.split('/');
-        if (splitUrl[0] == 'video') {
-          allFiles.push({
-            file_id: uuid(),
-            file_type: splitUrl[0],
-            filename: 'report-post/' + val.filename,
-            thumbnail: this.createVideoThumbnail(val),
-          });
-        }
-        if (splitUrl[0] != 'video') {
-          allFiles.push({
-            file_id: uuid(),
-            file_type: splitUrl[0],
-            filename: 'report-post/' + val.filename,
-          });
-        }
-      });
-    }
+  //   }
+  //   let allFiles = [];
+  //   if (files) {
+  //     files.media.forEach((val) => {
+  //       let splitUrl = val?.mimetype.split('/');
+  //       if (splitUrl[0] == 'video') {
+  //         allFiles.push({
+  //           file_id: uuid(),
+  //           file_type: splitUrl[0],
+  //           filename: 'report-post/' + val.filename,
+  //           thumbnail: this.createVideoThumbnail(val),
+  //         });
+  //       }
+  //       if (splitUrl[0] != 'video') {
+  //         allFiles.push({
+  //           file_id: uuid(),
+  //           file_type: splitUrl[0],
+  //           filename: 'report-post/' + val.filename,
+  //         });
+  //       }
+  //     });
+  //   }
 
-    const passwordHash = await bcrypt.hash(dto.password, 10);
-    let users: any = await Users.query().insertAndFetch({
-      first_name: dto.first_name,
-      last_name: dto.last_name,
-      email: dto.email,
-      password: passwordHash,
-      role: dto.role,
-      dob: dto.dob,
-      phone_number: dto.phone_number,
-      profile_picture: allFiles?.length > 0 ? JSON.stringify(allFiles) : null,
-      device_token: dto.device_token,
-      otp: '1234',
-      active_role: dto.active_role
-    });
-    let objUser: any = {};
-    objUser.token_type = jwtConstants.token_type;
-    objUser.token = this.jwtService.sign(users.toJSON());
-    objUser.user_details = users;
-    return objUser;
+  //   const passwordHash = await bcrypt.hash(dto.password, 10);
+  //   let users: any = await Users.query().insertAndFetch({
+  //     first_name: dto.first_name,
+  //     last_name: dto.last_name,
+  //     email: dto.email,
+  //     password: passwordHash,
+  //     role: dto.role,
+  //     dob: dto.dob,
+  //     phone_number: dto.phone_number,
+  //     profile_picture: allFiles?.length > 0 ? JSON.stringify(allFiles) : null,
+  //     device_token: dto.device_token,
+  //     otp: '1234',
+  //     active_role: dto.active_role
+  //   });
+  //   let objUser: any = {};
+  //   objUser.token_type = jwtConstants.token_type;
+  //   objUser.token = this.jwtService.sign(users.toJSON());
+  //   objUser.user_details = users;
+  //   return objUser;
+  // // }
   // }
+  async signUp(dto: SignUpDto, files): Promise<any> {
+    if (dto.password != dto.confirm_password) {
+      throw new HttpException('Please enter matched passwords', HttpStatus.BAD_REQUEST);
+    }
+
+    // Register the customer in Shopify
+    const shopifyApiKey = 'YOUR_SHOPIFY_API_KEY';
+    const shopifyPassword = 'YOUR_SHOPIFY_PASSWORD';
+    const shopifyStoreUrl = 'YOUR_SHOPIFY_STORE_URL';
+
+    try {
+      const shopifyCustomer = await axios.post(
+        `https://${shopifyStoreUrl}/admin/api/2021-10/customers.json`,
+        {
+          customer: {
+            first_name: dto.first_name,
+            last_name: dto.last_name,
+            email: dto.email,
+            password: dto.password, // You may need to handle password encryption properly
+          },
+        },
+        {
+          auth: {
+            username: shopifyApiKey,
+            password: shopifyPassword,
+          },
+        },
+      );
+
+      // If customer registration in Shopify is successful, proceed with user registration in your application
+      const passwordHash = await bcrypt.hash(dto.password, 10);
+      let allFiles = [];
+
+      // Process files if available
+      if (files) {
+        files.media.forEach((val) => {
+          let splitUrl = val?.mimetype.split('/');
+          if (splitUrl[0] == 'video') {
+            allFiles.push({
+              file_id: uuid(),
+              file_type: splitUrl[0],
+              filename: 'report-post/' + val.filename,
+              thumbnail: this.createVideoThumbnail(val),
+            });
+          }
+          if (splitUrl[0] != 'video') {
+            allFiles.push({
+              file_id: uuid(),
+              file_type: splitUrl[0],
+              filename: 'report-post/' + val.filename,
+            });
+          }
+        });
+      }
+
+      // Insert user into your database
+      let users: any = await Users.query().insertAndFetch({
+        first_name: dto.first_name,
+        last_name: dto.last_name,
+        email: dto.email,
+        password: passwordHash,
+        role: dto.role,
+        dob: dto.dob,
+        phone_number: dto.phone_number,
+        profile_picture: allFiles?.length > 0 ? JSON.stringify(allFiles) : null,
+        device_token: dto.device_token,
+        otp: '1234',
+        active_role: dto.active_role,
+      });
+
+      // Generate JWT token
+      let objUser: any = {};
+      objUser.token_type = jwtConstants.token_type;
+      objUser.token = this.jwtService.sign(users.toJSON());
+      objUser.user_details = users;
+
+      return objUser;
+    } catch (error) {
+      console.error('Error registering customer in Shopify:', error.response.data);
+      throw new HttpException('Error registering customer in Shopify', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async generateResetToken() {
