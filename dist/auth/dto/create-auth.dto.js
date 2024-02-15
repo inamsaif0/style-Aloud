@@ -8,9 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProfileInformationDto = exports.ApproveOtpDto = exports.PhoneNumberDto = exports.OtpDto = exports.LogInDto = void 0;
+exports.ProfileInformationDto = exports.GuestDto = exports.ApproveOtpDto = exports.PhoneNumberDto = exports.OtpDto = exports.LogInDto = void 0;
 const class_validator_1 = require("class-validator");
 class LogInDto {
 }
@@ -47,9 +46,16 @@ class ApproveOtpDto {
 }
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", typeof (_a = typeof BigInt !== "undefined" && BigInt) === "function" ? _a : Object)
+    __metadata("design:type", Object)
 ], ApproveOtpDto.prototype, "otp", void 0);
 exports.ApproveOtpDto = ApproveOtpDto;
+class GuestDto {
+}
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], GuestDto.prototype, "device_token", void 0);
+exports.GuestDto = GuestDto;
 class ProfileInformationDto {
 }
 __decorate([

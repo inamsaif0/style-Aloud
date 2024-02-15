@@ -11,7 +11,7 @@ import { InterceptorHelper } from 'src/utils/helper/interceptors/custom-files-in
 import { ResponseHelper } from 'src/utils/helper/response.helper';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
-import { ApproveOtpDto, LogInDto, PhoneNumberDto, ProfileInformationDto } from './dto/create-auth.dto';
+import { ApproveOtpDto, GuestDto, LogInDto, PhoneNumberDto, ProfileInformationDto } from './dto/create-auth.dto';
 
 @Controller('api/auth')
 export class AuthController {
@@ -19,6 +19,24 @@ export class AuthController {
     private authService: AuthService,
     private usersService: UsersService,
   ) { }
+
+
+  @Post('/add-guest')
+  @UseInterceptors(FileInterceptor(''))
+  async registerGuest(
+    @Body() dto: GuestDto,
+    @Req() req: Request,
+    @Res() res: Response
+  ){
+    try{
+      const data = await this.authService.registerGuest(dto)
+      return ResponseHelper.success({ res, data })
+
+    }catch(error){
+      return ResponseHelper.error({ res, req, error })
+
+    }
+  }
 
   @Post('/login')
   @UseInterceptors(FileInterceptor(''))

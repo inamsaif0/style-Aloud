@@ -8,22 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShopifyService = void 0;
 require("@shopify/shopify-api/adapters/node");
 const common_1 = require("@nestjs/common");
-const axios_1 = require("axios");
 const shopify_api_1 = require("@shopify/shopify-api");
 const config_1 = require("@nestjs/config");
 let ShopifyService = class ShopifyService {
     constructor(configService) {
         this.configService = configService;
-        this.shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
-        this.axiosInstance = axios_1.default.create({
-            baseURL: this.shopifyApiUrl,
-            timeout: 5000,
-        });
         this.initializeShopifyApi();
     }
     initializeShopifyApi() {
@@ -140,7 +133,7 @@ let ShopifyService = class ShopifyService {
 };
 ShopifyService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [config_1.ConfigService])
 ], ShopifyService);
 exports.ShopifyService = ShopifyService;
 //# sourceMappingURL=shopify.service.js.map

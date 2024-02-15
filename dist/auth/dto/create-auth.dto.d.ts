@@ -12,6 +12,9 @@ export declare class PhoneNumberDto {
 export declare class ApproveOtpDto {
     otp: BigInt;
 }
+export declare class GuestDto {
+    device_token: string;
+}
 export declare class ProfileInformationDto {
     user_id: String;
     name: String;

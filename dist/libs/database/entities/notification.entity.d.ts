@@ -5,7 +5,7 @@ export declare class Notification extends Mapping {
     $formJson(json: any): any;
     static get relationMappings(): {
         received_notification: {
-            relation: any;
+            relation: import("objection").RelationType;
             modelClass: typeof NotificationReceiver;
             join: {
                 from: string;
@@ -13,7 +13,7 @@ export declare class Notification extends Mapping {
             };
         };
         sender: {
-            relation: any;
+            relation: import("objection").RelationType;
             modelClass: typeof NotificationReceiver;
             join: {
                 from: string;

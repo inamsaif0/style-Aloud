@@ -19,7 +19,6 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -27,6 +26,7 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const user_entity_1 = require("../libs/database/entities/user.entity");
 const users_service_1 = require("../users/users.service");
+const guest_entity_1 = require("../libs/database/entities/guest.entity");
 let AuthService = class AuthService {
     constructor(usersService, jwtService) {
         this.usersService = usersService;
@@ -80,10 +80,18 @@ let AuthService = class AuthService {
             is_verified: true
         });
     }
+    async registerGuest(dto) {
+        let data = await guest_entity_1.Guest.query().insertAndFetch({
+            device_token: dto.device_token
+        });
+        console.log('this guest is added and this is the data', data);
+        return data;
+    }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService, typeof (_a = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [users_service_1.UsersService,
+        jwt_1.JwtService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

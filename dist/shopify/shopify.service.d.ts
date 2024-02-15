@@ -4,7 +4,6 @@ import { CollectionsDto } from './dto/create-shopify.dto';
 export declare class ShopifyService {
     private readonly configService;
     private shopify;
-    private readonly shopifyApiUrl;
     private readonly axiosInstance;
     constructor(configService: ConfigService);
     private initializeShopifyApi;

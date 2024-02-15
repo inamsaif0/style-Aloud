@@ -5,7 +5,7 @@ export declare class Reporting extends Mapping {
     $formJson(json: any): any;
     static get relationMappings(): {
         user: {
-            relation: any;
+            relation: import("objection").RelationType;
             modelClass: typeof Users;
             join: {
                 from: string;

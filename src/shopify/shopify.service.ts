@@ -67,10 +67,10 @@ export class ShopifyService {
   private readonly axiosInstance: AxiosInstance;
 
   constructor(private readonly configService: ConfigService) {
-    this.axiosInstance = axios.create({
-            baseURL: this.shopifyApiUrl,
-            timeout: 5000,
-          });
+    // this.axiosInstance = axios.create({
+    //         baseURL: this.shopifyApiUrl,
+    //         timeout: 5000,
+    //       });
     this.initializeShopifyApi();
   }
 

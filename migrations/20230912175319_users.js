@@ -13,7 +13,6 @@ exports.up = function (knex) {
             table.integer('otp', 11).nullable();
             table.text('device_token', 255).nullable();
             table.text('profile_picture', 255).nullable();
-            table.string('active_role', 255).nullable().defaultTo('user');
             table.string('role', 255).nullable().defaultTo('user');
             table.string('phone_number', 255).nullable(); 
             table.string('dob', 255).nullable(); 

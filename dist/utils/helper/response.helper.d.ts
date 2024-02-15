@@ -1,3 +1,4 @@
+import { HttpStatus } from "@nestjs/common";
 export declare class ResponseHelper {
     static success({ res, data }: {
         res: any;
@@ -7,6 +8,6 @@ export declare class ResponseHelper {
         res: any;
         error: any;
         req: any;
-        errorCode?: any;
+        errorCode?: HttpStatus;
     }): Promise<any>;
 }

@@ -28,7 +28,10 @@ export class ApproveOtpDto {
     @IsNotEmpty()
     otp: BigInt;
 }
-
+export class GuestDto {
+    @IsNotEmpty()
+    device_token: string;
+}
 export class ProfileInformationDto{
 
 
@@ -82,3 +85,4 @@ export class ProfileInformationDto{
 
 
 }
+
