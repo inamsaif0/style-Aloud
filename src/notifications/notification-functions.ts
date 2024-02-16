@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { NotificationReceiver } from "src/libs/database/entities/notification-receiver.entity";
-import {  Users } from "src/libs/database/entities/user.entity";
-import {Notification} from "src/libs/database/entities/notification.entity"
+import { Users } from "src/libs/database/entities/user.entity";
+import { Notification } from "src/libs/database/entities/notification.entity"
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 // import { Helper } from "src/libs/helper/helper.global";
 import { Helper } from "src/utils/helper/helper.global";
@@ -17,10 +17,29 @@ export class NotificationFunction {
     constructor() { }
 
 
-
-    async PublicReportAdded({ senderId, item, receiver_ids, notificationTitle}) {
+    async sendToAll({item, notificationTitle, type}) {
         try {
-            let user: any = await Users.query().where({id: senderId}).first()
+            let title: any = `${notificationTitle}`
+            let body: any = `${item}`
+            await this.insertAllNotifications({
+                body: item,
+                text: title,
+                // source_id: item,
+                // sender_id: senderId,
+                // receivedIds: receiver_ids,
+                type: type,
+                relatedType: "promotion",
+                // related_id:item.id,
+                title: notificationTitle
+            })
+        } catch (error) {
+            console.log(error)
+            return false
+        }
+    }
+    async PublicReportAdded({ senderId, item, receiver_ids, notificationTitle }) {
+        try {
+            let user: any = await Users.query().where({ id: senderId }).first()
             let title: any = `${user?.first_name} ${user.last_name} added report`
             await this.insertMultipleNotifications({
                 body: item,
@@ -29,12 +48,12 @@ export class NotificationFunction {
                 sender_id: senderId,
                 receivedIds: receiver_ids,
                 type: 'adding_report',
-                relatedType:"report",
-                related_id:item.id,
+                relatedType: "report",
+                related_id: item.id,
                 title: notificationTitle
             })
             return true
-        } catch(err) {
+        } catch (err) {
             console.log(err)
             return false
         }
@@ -111,11 +130,11 @@ export class NotificationFunction {
             notification.related_id = related_id;
             notification.related_type = relatedType;
             notification.sender_id = sender_id;
-            notification.received_id = receivedIds;
+            notification.receiver_id = receivedIds;
             notification.title = title;
 
             notification = await Notification.query().insertAndFetch(notification);
-            this.eventEmitter.emit('send-multiple-notification', { receivedIds, notification, relatedType, related_id, body:text, title})
+            this.eventEmitter.emit('send-multiple-notifications', { receivedIds, notification, relatedType, related_id, body: text, title })
             return notification;
 
         } catch (err) {
@@ -124,6 +143,33 @@ export class NotificationFunction {
         }
     }
 
+    async insertAllNotifications({
+        body,
+        text,
+        type,
+        relatedType,
+        title
+    }) {
+        try {
+            let notification: any;
+            notification = new Notification();
+            notification.body = body;
+            notification.text = text;
+            notification.type = type;
+            notification.related_type = relatedType;
+            notification.title = title;
+
+            notification = await Notification.query().insertAndFetch(notification);
+            let userIds:any = await Helper.getAllUsersIds()
+            console.log('these are the user ids for notification', userIds);
+            this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds ,notification, relatedType, body: text, title })
+            return notification;
+
+        } catch (err) {
+            console.log(err, 'error')
+            return err
+        }
+    }
 
     async insertSingleNotification({
         body,
@@ -174,21 +220,21 @@ export class NotificationFunction {
     async sendMultipleNotifications({ receiver_ids, notification, title, body }) {
         try {
 
-        // let deviceTokens =
-            // if (receiver_ids?.length > 0) {
-            //     let allUsers: any = receiver_ids.reduce((acc, curr) => {
-            //         // let deviceToken: any  = await Helper.deviceTokenByUsers(acc)
-            //         acc.push({
-            //             notification_id: notification.id,
-            //             receiver_ids: curr
-            //         });
-            //         return acc;
-            //     }, []);
+            // let deviceTokens =
+            if (receiver_ids?.length > 0) {
+                let allUsers: any = receiver_ids.reduce((acc, curr) => {
+                    // let deviceToken: any  = await Helper.deviceTokenByUsers(acc)
+                    acc.push({
+                        notification_id: notification.id,
+                        receiver_ids: curr
+                    });
+                    return acc;
+                }, []);
 
-            //     let deviceTokens: any = await Helper.sendMultipleNotification(receiver_ids)
-            //     await FcmHelper.SendMultipleNotificationWithTitleBody({ deviceTokens, notification, title: title, body: body })
-            //     await NotificationReceiver.query().insertGraph(allUsers)
-            // }
+                let deviceTokens: any = await Helper.multipleDeviceTokenByUsers(receiver_ids)
+                await FCMHelper.sendMultipleNotification({ deviceTokens, notification, title: title, body: body })
+                await NotificationReceiver.query().insertGraph(allUsers)
+            }
         }
         catch (err) {
             console.log(err)

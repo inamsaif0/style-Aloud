@@ -17,7 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 
 
 import { ShopifyModule } from './shopify/shopify.module';
-import { BillingsModule } from './billings/billings.module';
+// import { BillingsModule } from './billings/billings.module';
 import { KlarnaModule } from './klarna/klarna.module';
 
 @Module({
@@ -35,6 +35,6 @@ import { KlarnaModule } from './klarna/klarna.module';
     }),
     ConfigModule.forRoot({ isGlobal: true }),
 
-    AuthModule, UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, BillingsModule, KlarnaModule ],
+    AuthModule, UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, KlarnaModule ],
 })
 export class AppModule { }

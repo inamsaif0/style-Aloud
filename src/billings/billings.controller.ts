@@ -1,35 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { BillingsService } from './billings.service';
-import { CreateBillingDto } from './dto/create-billing.dto';
-import { UpdateBillingDto } from './dto/update-billing.dto';
+// import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// import { BillingsService } from './billings.service';
+// import { CreateBillingDto } from './dto/create-billing.dto';
+// import { UpdateBillingDto } from './dto/update-billing.dto';
 
-@Controller('billings')
-export class BillingsController {
-  constructor(private readonly billingsService: BillingsService) {}
+// @Controller('billings')
+// export class BillingsController {
+//   constructor(private readonly billingsService: BillingsService) {}
 
-  // This is For Klarna
-  @Post()
-  create(@Body() createBillingDto: CreateBillingDto) {
-    return this.billingsService.create(createBillingDto);
-  }
+//   // This is For Klarna
+//   @Post()
+//   create(@Body() createBillingDto: CreateBillingDto) {
+//     return this.billingsService.create(createBillingDto);
+//   }
 
-  @Get()
-  findAll() {
-    return this.billingsService.findAll();
-  }
+//   @Get()
+//   findAll() {
+//     return this.billingsService.findAll();
+//   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.billingsService.findOne(+id);
-  }
+//   @Get(':id')
+//   findOne(@Param('id') id: string) {
+//     return this.billingsService.findOne(+id);
+//   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBillingDto: UpdateBillingDto) {
-    return this.billingsService.update(+id, updateBillingDto);
-  }
+//   @Patch(':id')
+//   update(@Param('id') id: string, @Body() updateBillingDto: UpdateBillingDto) {
+//     return this.billingsService.update(+id, updateBillingDto);
+//   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.billingsService.remove(+id);
-  }
-}
+//   @Delete(':id')
+//   remove(@Param('id') id: string) {
+//     return this.billingsService.remove(+id);
+//   }
+// }

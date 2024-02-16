@@ -43,10 +43,11 @@
 // }
 
 // shopify.controller.ts
-import { Controller, Post, Delete, Patch, Param, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Delete, Patch, Param, Body, HttpException, HttpStatus, Get } from '@nestjs/common';
 import { ShopifyService } from './shopify.service';
 import { CollectionsDto } from './dto/create-shopify.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+// import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('shopify')
 export class ShopifyController {
@@ -54,13 +55,13 @@ export class ShopifyController {
 
 
   @Get('/get-collections')
-  @FileInterceptor(FileInterceptor(''))
+  // @FileInterceptor(FileInterceptor(''))
   getAllCollections(): any {
     return this.shopifyService.getCollections();
   }
 
   @Post('/get-collection-products')
-  @FileInterceptor(FileInterceptor(''))
+  // @FileInterceptor(FileInterceptor(''))
   getCollectionProducts(
     @Body() dto: CollectionsDto
   ): any {
@@ -112,7 +113,5 @@ export class ShopifyController {
     }
   }
 }
-function Get(arg0: string): (target: ShopifyController, propertyKey: "getAllCollections", descriptor: TypedPropertyDescriptor<() => any>) => void | TypedPropertyDescriptor<() => any> {
-  throw new Error('Function not implemented.');
-}
+
 

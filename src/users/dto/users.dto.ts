@@ -31,13 +31,13 @@ export class SignUpDto {
     @IsNotEmpty()
     role: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     active_role: string;
 
     @IsNotEmpty()
     dob: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     phone_number: string;
 
 

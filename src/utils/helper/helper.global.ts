@@ -11,7 +11,11 @@ export class Helper {
     }
     return null;
   }
-
+  static async getAllUsersIds () {
+    let userIds:any = await Users.query().select("id").whereNotNull("device_token")
+    console.log('these are user ids',userIds);
+    return userIds;
+  }
 
   static async deviceTokenByUsers (userId) {
     let users: any = await Users.query().where('id', userId).first();
