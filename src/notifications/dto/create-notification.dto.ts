@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional, isNotEmpty } from "class-validator";
 
 export class CreateNotificationDto {}
 export class SeenDto {
@@ -6,4 +6,18 @@ export class SeenDto {
     notification_id: number;
   }
   
-  
+  export class NotificationDto {
+    @IsNotEmpty()
+    title: string;
+
+    @IsNotEmpty()
+    detail: string
+
+    @IsOptional()
+    image: string;
+
+    @IsNotEmpty()
+    type: string
+
+
+  }

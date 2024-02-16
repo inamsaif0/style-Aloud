@@ -1,13 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateNotificationDto, SeenDto } from './dto/create-notification.dto';
+import { CreateNotificationDto, NotificationDto, SeenDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Notification } from 'src/libs/database/entities/notification.entity';
 import { NotificationReceiver } from 'src/libs/database/entities/notification-receiver.entity';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { NotificationFunction } from './notification-functions';
+import { GetUserByIdDto } from 'src/users/dto/users.dto';
 
 @Injectable()
 export class NotificationsService {
     EventEmitter: any;
+    constructor(private readonly notificationFunctions: NotificationFunction) { }
     // this will be use to add notifications in the notification table
 
     // send notification
@@ -30,6 +33,11 @@ export class NotificationsService {
         .delete();
     }
 
+    async sendNotificationToAll(NotifiacitonDto: NotificationDto){
+
+
+        const data = await this.notificationFunctions.sendToAll({item: NotifiacitonDto, notificationTitle:NotifiacitonDto.title, type:NotifiacitonDto.type})
+    }
 
     async seenSingleNotification(SeenDto: SeenDto, req){
         let query :any = await Notification.query()
