@@ -51,6 +51,7 @@ export class Helper {
     // return userIds?das  .device_token ? users.device_token : null
   }
   static async multipleDeviceTokenByGuest ({ids}) {
+    console.log(ids)
     let userIds:any = await Guest.query().select("device_token").whereNotNull("device_token").findByIds(ids)
     
     return userIds;

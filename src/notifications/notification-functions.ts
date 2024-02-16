@@ -12,7 +12,6 @@ import { query } from "express";
 
 @Injectable()
 export class NotificationFunction {
-
     constructor(
         private readonly eventEmitter: EventEmitter2,
 
@@ -176,7 +175,7 @@ export class NotificationFunction {
             // console.log('this is inam', notification,userIds)
             // this.eventEmitter.emit('send-notification')
             console.log( userIds ,notification, relatedType,  text, 'dddd')
-            this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds  })
+             this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds ,notification, relatedType, body: text })
 
             return notification;
 
@@ -235,25 +234,26 @@ export class NotificationFunction {
     }
 
     @OnEvent('send-multiple-notifications', { async: true })
-    async sendMultipleNotifications({ receiver_ids }) {
+    async sendMultipleNotifications({ receiver_ids, notification, title, body }) {
     
         try {
-            console.log('inam', receiver_ids)
-            // if (receiver_ids?.length > 0) {
-            //     let allUsers: any = receiver_ids.reduce((acc, curr) => {
-            //         acc.push({
-            //             notification_id: notification.id,
-            //             receiver_ids: curr
-            //         });
-            //         return acc;
-            //     }, []);
+            console.log('inam')
+            if (receiver_ids?.length > 0) {
+                console.log('jsjsjssjjssjsjsj')
+                let allUsers: any = receiver_ids.reduce((acc, curr) => {
+                    acc.push({
+                        notification_id: notification.id,
+                        receiver_ids: curr
+                    });
+                    return acc;
+                }, []);
 
-            //     let deviceTokens: any = await Helper.multipleDeviceTokenByGuest(receiver_ids)
-            //     console.log(deviceTokens, 'this is device token')
-            //     await FCMHelper.sendMultipleNotification({ deviceTokens, notification, title: title, body: body })
-            //     await NotificationReceiver.query().insertGraph(allUsers)
+                let deviceTokens: any = await Helper.multipleDeviceTokenByGuest({ids:receiver_ids})
+                console.log(deviceTokens, 'this is device token')
+                await FCMHelper.sendMultipleNotification({ deviceTokens, notification, title: title, body: body })
+                await NotificationReceiver.query().insertGraph(allUsers)
             }
-        // }
+        }
         catch (err) {
             console.log(err)
         }
