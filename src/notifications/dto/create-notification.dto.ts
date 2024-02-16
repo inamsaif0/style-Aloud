@@ -19,5 +19,8 @@ export class SeenDto {
     @IsNotEmpty()
     type: string
 
+    @IsNotEmpty()
+    device_token: string
+
 
   }

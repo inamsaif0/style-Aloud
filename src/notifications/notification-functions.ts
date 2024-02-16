@@ -30,7 +30,8 @@ export class NotificationFunction {
                 type: type,
                 relatedType: "promotion",
                 // related_id:item.id,
-                title: notificationTitle
+                title: notificationTitle,
+
             })
         } catch (error) {
             console.log(error)
@@ -148,7 +149,7 @@ export class NotificationFunction {
         text,
         type,
         relatedType,
-        title
+        title,
     }) {
         try {
             let notification: any;
@@ -160,7 +161,7 @@ export class NotificationFunction {
             notification.title = title;
 
             notification = await Notification.query().insertAndFetch(notification);
-            let userIds:any = await Helper.getAllUsersIds()
+            let userIds:any = await Helper.getAllIds()
             console.log('these are the user ids for notification', userIds);
             this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds ,notification, relatedType, body: text, title })
             return notification;
@@ -220,10 +221,8 @@ export class NotificationFunction {
     async sendMultipleNotifications({ receiver_ids, notification, title, body }) {
         try {
 
-            // let deviceTokens =
             if (receiver_ids?.length > 0) {
                 let allUsers: any = receiver_ids.reduce((acc, curr) => {
-                    // let deviceToken: any  = await Helper.deviceTokenByUsers(acc)
                     acc.push({
                         notification_id: notification.id,
                         receiver_ids: curr
@@ -231,7 +230,7 @@ export class NotificationFunction {
                     return acc;
                 }, []);
 
-                let deviceTokens: any = await Helper.multipleDeviceTokenByUsers(receiver_ids)
+                let deviceTokens: any = await Helper.multipleDeviceTokenByGuest(receiver_ids)
                 await FCMHelper.sendMultipleNotification({ deviceTokens, notification, title: title, body: body })
                 await NotificationReceiver.query().insertGraph(allUsers)
             }

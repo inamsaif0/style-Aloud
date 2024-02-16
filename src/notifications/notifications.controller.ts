@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UseGuards, Res, Req, HttpException, HttpCode, HttpStatus } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { CreateNotificationDto, SeenDto } from './dto/create-notification.dto';
+import { CreateNotificationDto, NotificationDto, SeenDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/utils/guard/jwt-auth.guard';
@@ -42,6 +42,29 @@ export class NotificationsController {
   ){
       try{
           const data =  await this.NotificationsService.seenMultipleNotifications(SeenDto, req)
+          if(!data){
+            throw new HttpException('no data found', HttpStatus.NOT_FOUND)
+          }
+
+      return data;
+
+      }
+      catch(err){
+            console.log(err);
+            return err;
+      }
+  }
+
+  @Post('/send-notification-to-all')
+  @UseInterceptors(FileInterceptor(''))
+  @UseGuards(JwtAuthGuard)
+  async sendNotificationToAll(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() NotificationDto: NotificationDto,
+  ){
+      try{
+          const data =  await this.NotificationsService.sendNotificationToAll(NotificationDto)
           if(!data){
             throw new HttpException('no data found', HttpStatus.NOT_FOUND)
           }
