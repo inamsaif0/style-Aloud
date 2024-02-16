@@ -19,6 +19,10 @@ export class OtpDto {
 
 
 }
+export class GuestDto {
+    @IsNotEmpty()
+    device_token: string;
+}
 export class PhoneNumberDto {
     @IsNotEmpty()
     phone_number: BigInteger;

@@ -8,6 +8,8 @@ exports.up = function (knex) {
             table.increments('id');
             table.string('detail', 255).nullable();
             table.string('text', 255).nullable();
+            table.string('body', 255).nullable();
+            table.string('title', 255).nullable();
             // table.integer('source_id', 11).nullable();
             // table.integer('sender_id', 11).nullable();
             table.string('type', 255).nullable();

@@ -14,7 +14,7 @@ import { Helper } from 'src/utils/helper/helper.global';
 // import { GetReportsDto } from '../reporting/dto/reporting.dto';
 
 @WebSocketGateway({
-    namespace: "petconnect",
+    namespace: "style",
     cors: '*',
     transports: ['websocket']
 })

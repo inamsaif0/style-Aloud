@@ -29,8 +29,8 @@ export class Helper {
   }
 
   static async getAllIds () {
-    let userIds:any = await Guest.query().select("id").whereNotNull("device_token")
-    console.log('these are user ids',userIds);
+    let userIds:any = await Guest.query().select("id")
+
     return userIds;
   }
   static async deviceTokenByUsers (userId) {

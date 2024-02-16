@@ -14,6 +14,7 @@ import { UsersModule } from './users/users.module';
 import { FriendsModule } from './friends/friends.module';
 import { NotificationsModule } from './notifications/notifications.module';
 // import { WalletModule } from './wallet/wallet.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 import { ShopifyModule } from './shopify/shopify.module';
@@ -24,6 +25,11 @@ import { KlarnaModule } from './klarna/klarna.module';
   controllers: [AppController, UsersController, ],
   providers: [AppService],
   imports: [
+    EventEmitterModule.forRoot({
+      maxListeners: 10000,
+      verboseMemoryLeak: false,
+      ignoreErrors: true,
+    }),
     MulterModule.register({ dest: './public/' }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),

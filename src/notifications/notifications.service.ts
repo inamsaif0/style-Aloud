@@ -35,7 +35,9 @@ export class NotificationsService {
 
     async sendNotificationToAll(notificationDto: NotificationDto)
     {
-        const data = await this.notificationFunctions.sendToAll({item: notificationDto, notificationTitle:notificationDto.title, type:notificationDto.type})
+        
+        console.log(notificationDto)
+        const data:any = await this.notificationFunctions.sendToAll({item: notificationDto, notificationTitle:notificationDto.title, type:notificationDto.type})
         return data;
     }
 

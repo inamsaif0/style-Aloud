@@ -3,8 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Users } from '../libs/database/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { ApproveOtpDto, PhoneNumberDto, ProfileInformationDto } from './dto/create-auth.dto';
+import { ApproveOtpDto, GuestDto, PhoneNumberDto, ProfileInformationDto } from './dto/create-auth.dto';
 import { PetProfile } from 'src/libs/database/entities/pet-profile.entity';
+import { Guest } from 'src/libs/database/entities/guest.entity';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,13 @@ export class AuthService {
       user_details: user
     };
   }
-
+  async registerGuest(dto: GuestDto){
+    let data:any = await Guest.query().insertAndFetch({
+      device_token: dto.device_token
+    }) 
+    console.log('this guest is added and this is the data', data)
+    return data
+  }
   async validateUser(email: string, pass: string, deviceToken: string): Promise<any> {
     let user: any = await this.usersService.findOne(email, deviceToken);
     if (user && user.password && await bcrypt.compare(pass, user.password) == true) {

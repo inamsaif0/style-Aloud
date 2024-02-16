@@ -6,6 +6,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/utils/guard/jwt-auth.guard';
 import { STATUS_CODES } from 'http';
 import { Request, Response } from 'express';
+import { ResponseHelper } from 'src/utils/helper/response.helper';
 
 @Controller('api/notifications')
 export class NotificationsController {
@@ -57,7 +58,7 @@ export class NotificationsController {
 
   @Post('/send-notification-to-all')
   @UseInterceptors(FileInterceptor(''))
-  @UseGuards(JwtAuthGuard)
+
   async sendNotificationToAll(
     @Req() req: Request,
     @Res() res: Response,
@@ -65,16 +66,10 @@ export class NotificationsController {
   ){
       try{
           const data =  await this.NotificationsService.sendNotificationToAll(NotificationDto)
-          if(!data){
-            throw new HttpException('no data found', HttpStatus.NOT_FOUND)
-          }
-
-      return data;
-
-      }
-      catch(err){
-            console.log(err);
-            return err;
+          return ResponseHelper.success({ res, data })
+              }
+      catch(error){
+        return ResponseHelper.error({ res, req, error })
       }
   }
 }

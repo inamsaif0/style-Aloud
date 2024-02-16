@@ -12,17 +12,20 @@ import { query } from "express";
 
 @Injectable()
 export class NotificationFunction {
-    private readonly eventEmitter: EventEmitter2
-    private readonly safetyPointGateway: SafetyPointGateway
-    constructor() { }
+
+    constructor(
+        private readonly eventEmitter: EventEmitter2,
+
+    ) { }
 
 
     async sendToAll({item, notificationTitle, type}) {
         try {
             let title: any = `${notificationTitle}`
-            let body: any = `${item}`
-            await this.insertAllNotifications({
-                body: item,
+            // let body: any = `${item}`
+            
+           return await this.insertAllNotifications({
+                // body: item,
                 text: title,
                 // source_id: item,
                 // sender_id: senderId,
@@ -33,6 +36,8 @@ export class NotificationFunction {
                 title: notificationTitle,
 
             })
+            return true
+
         } catch (error) {
             console.log(error)
             return false
@@ -143,27 +148,36 @@ export class NotificationFunction {
             return err
         }
     }
+    // private onStateChangeEvent(event: any) {
+    //     console.log("reached here: " + event);
+    //                 this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds ,notification, relatedType, body: text, title:'dddd' })
 
-    async insertAllNotifications({
-        body,
+    //   }
+    private insertAllNotifications = async ({
+        // body,
         text,
         type,
         relatedType,
         title,
-    }) {
+    }) => {
+        
         try {
             let notification: any;
             notification = new Notification();
-            notification.body = body;
+            // notification.body = body;
             notification.text = text;
             notification.type = type;
             notification.related_type = relatedType;
-            notification.title = title;
+            // notification.title = title;
 
             notification = await Notification.query().insertAndFetch(notification);
             let userIds:any = await Helper.getAllIds()
-            console.log('these are the user ids for notification', userIds);
-            this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds ,notification, relatedType, body: text, title })
+            // return userIds
+            // console.log('this is inam', notification,userIds)
+            // this.eventEmitter.emit('send-notification')
+            console.log( userIds ,notification, relatedType,  text, 'dddd')
+            this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds  })
+
             return notification;
 
         } catch (err) {
@@ -205,7 +219,10 @@ export class NotificationFunction {
         this.eventEmitter.emit('send-single-notification', { receiver_id, notification, title: title, body: text });
         return notification;
     }
-
+    @OnEvent('send-notification', { async: true })
+    async data(){
+        console.log('helloooooooo')
+    }
 
     @OnEvent('send-single-notification', { async: true })
     async sendSingleNotification({ receiver_id, notification, title, body }) {
@@ -218,23 +235,25 @@ export class NotificationFunction {
     }
 
     @OnEvent('send-multiple-notifications', { async: true })
-    async sendMultipleNotifications({ receiver_ids, notification, title, body }) {
+    async sendMultipleNotifications({ receiver_ids }) {
+    
         try {
+            console.log('inam', receiver_ids)
+            // if (receiver_ids?.length > 0) {
+            //     let allUsers: any = receiver_ids.reduce((acc, curr) => {
+            //         acc.push({
+            //             notification_id: notification.id,
+            //             receiver_ids: curr
+            //         });
+            //         return acc;
+            //     }, []);
 
-            if (receiver_ids?.length > 0) {
-                let allUsers: any = receiver_ids.reduce((acc, curr) => {
-                    acc.push({
-                        notification_id: notification.id,
-                        receiver_ids: curr
-                    });
-                    return acc;
-                }, []);
-
-                let deviceTokens: any = await Helper.multipleDeviceTokenByGuest(receiver_ids)
-                await FCMHelper.sendMultipleNotification({ deviceTokens, notification, title: title, body: body })
-                await NotificationReceiver.query().insertGraph(allUsers)
+            //     let deviceTokens: any = await Helper.multipleDeviceTokenByGuest(receiver_ids)
+            //     console.log(deviceTokens, 'this is device token')
+            //     await FCMHelper.sendMultipleNotification({ deviceTokens, notification, title: title, body: body })
+            //     await NotificationReceiver.query().insertGraph(allUsers)
             }
-        }
+        // }
         catch (err) {
             console.log(err)
         }
