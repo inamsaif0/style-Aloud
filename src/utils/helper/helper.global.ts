@@ -1,4 +1,5 @@
 import { raw } from "objection";
+import { Guest } from "src/libs/database/entities/guest.entity";
 import { Users } from "src/libs/database/entities/user.entity";
 // import { Reporting } from "../database/entities/reporting.entity";
 
@@ -16,8 +17,12 @@ export class Helper {
     console.log('these are user ids',userIds);
     return userIds;
   }
-  static async getAllGuestIds () {
-    let userIds:any = await Users.query().select("id").whereNotNull("device_token")
+  static async getAllGuestIds (device_token) {
+    let data:any = await Guest.query().where({device_token:device_token})
+    if(data){
+      return data
+    }
+    let userIds:any = await Guest.query().select("id").whereNotNull("device_token")
     console.log('these are user ids',userIds);
     return userIds;
   }

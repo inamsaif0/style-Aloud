@@ -1,6 +1,6 @@
 import { Mapping } from "../orm/sql.model";
 
-export class Friends extends Mapping {
+export class Guest extends Mapping {
     static table = 'guest'
 }
 
