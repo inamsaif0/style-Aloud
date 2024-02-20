@@ -18,6 +18,7 @@ export class FCMHelper {
     }
     static async sendMultipleNotification({deviceTokens, notification, title, body }){
         console.log('sssssssssssssssssssss')
+        console.log(fcm)
         let message =  {
             registration_ids: deviceTokens,
             notification: {title, body},
@@ -27,6 +28,7 @@ export class FCMHelper {
         await this.FcmSender(message);
     }
     static async FcmSender(message: any){
+        console.log(serverKey)
         fcm.send(message,  (response: any) => {
             try{
                 if(response){
