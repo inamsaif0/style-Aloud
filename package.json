@@ -67,6 +67,7 @@
     "rxjs": "^7.6.0",
     "set-tz": "^0.2.0",
     "shopify": "^0.1.0",
+    "shopify-api-node": "^3.13.1",
     "slug": "^8.2.2",
     "validatorjs": "^3.22.1"
   },

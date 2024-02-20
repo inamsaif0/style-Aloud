@@ -172,7 +172,7 @@ export class NotificationFunction {
             notification = await Notification.query().insertAndFetch(notification);
             let userIds:any = await Helper.getAllIds()
             // return userIds
-            // console.log('this is inam', notification,userIds)
+            console.log('this is inam', notification,userIds)
             // this.eventEmitter.emit('send-notification')
             console.log( userIds ,notification, relatedType,  text, 'dddd')
              this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds ,notification, relatedType, body: text })

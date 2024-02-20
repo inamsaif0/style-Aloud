@@ -1,117 +1,66 @@
-// // shopify.controller.ts
-// import { Controller, Get, Post, Body, Query, UseInterceptors } from '@nestjs/common';
-// import { ShopifyService } from './shopify.service';
-// import { ProductDto, AddToCartDto, CheckoutDto, CollectionsDto } from './dto/create-shopify.dto';
-// import { FileInterceptor } from '@nestjs/platform-express';
+// customer.controller.ts
 
-// @Controller('api/shopify')
-// export class ShopifyController {
-
-//   constructor(private readonly shopifyService: ShopifyService) {}
-
-//   @Get('/products')
-//   getAllProducts(){
-//     return this.shopifyService.getAllProducts();
-//   }
-
-//   @Get('/cart')
-//   getCart(): any {
-//     return this.shopifyService.getCart();
-//   }
-
-//   @Post('/checkout')
-//   @UseInterceptors(FileInterceptor(''))
-//   checkout(@Body() checkoutDto: CheckoutDto): any {
-//     return this.shopifyService.checkout(checkoutDto);
-//   }
-
-  // @Get('/get-collections')
-  // @UseInterceptors(FileInterceptor(''))
-  // getAllCollections(): any {
-  //   return this.shopifyService.getCollections();
-  // }
-
-  // @Post('/get-collection-products')
-  // @UseInterceptors(FileInterceptor(''))
-  // getCollectionProducts(
-  //   @Body() dto: CollectionsDto
-  // ): any {
-  //   return this.shopifyService.getCollectionsProducts(dto);
-  // }
-
-  
-// }
-
-// shopify.controller.ts
-import { Controller, Post, Delete, Patch, Param, Body, HttpException, HttpStatus, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 import { ShopifyService } from './shopify.service';
-import { CollectionsDto } from './dto/create-shopify.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-// import { FileInterceptor } from '@nestjs/platform-express';
-
 @Controller('shopify')
 export class ShopifyController {
-  constructor(private readonly shopifyService: ShopifyService) {}
+  
+  constructor(private readonly customerService: ShopifyService) {}
 
-
-  @Get('/get-collections')
-  // @FileInterceptor(FileInterceptor(''))
-  getAllCollections(): any {
-    return this.shopifyService.getCollections();
+  // this is to register customer in shopify
+  @Post('register')
+  async registerCustomer(@Body() customerData: any): Promise<any> {
+    // Assuming customerData includes fields like name, email, address, etc.
+    // You need to implement validation and error handling here
+    try {
+      const customer = await this.customerService.createCustomer(customerData);
+      return { success: true, customer };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
   }
 
-  @Post('/get-collection-products')
-  // @FileInterceptor(FileInterceptor(''))
-  getCollectionProducts(
-    @Body() dto: CollectionsDto
-  ): any {
-    return this.shopifyService.getCollectionsProducts(dto);
+  // this is the api to use after the checkout
+  @Post('checkout')
+  async createCheckout(@Body('customerId') customerId: string): Promise<any> {
+    const checkout = await this.customerService.createCheckout(customerId);
+    return checkout;
   }
   
-  @Post('register')
-  async registerCustomer(@Body() customerData: any) {
-    try {
-      return await this.shopifyService.registerCustomer(customerData);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+
+  // this is the api for line items
+  @Post(':id/add-item')
+  async addLineItem(
+    @Param('id') checkoutId: string,
+    @Body('lineItems') lineItems: any[]
+  ): Promise<any> {
+    const updatedCheckout = await this.customerService.addLineItem(checkoutId, lineItems);
+    return updatedCheckout;
+  }
+  
+
+  // this is to get check out
+
+  @Get(':id')
+  async getCheckout(@Param('id') checkoutId: string): Promise<any> {
+    const checkout = await this.customerService.getCheckout(checkoutId);
+    return checkout;
   }
 
-  @Post('authenticate')
-  async authenticateCustomer(@Body() credentials: any) {
-    try {
-      return await this.shopifyService.authenticateCustomer(credentials);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
-    }
+  @Post(':id/add-card-details')
+  async addCardDetails(
+    @Param('id') checkoutId: string,
+    @Body('cardDetails') cardDetails: any
+  ): Promise<any> {
+    const updatedCheckout = await this.customerService.addCardDetails(checkoutId, cardDetails);
+    return updatedCheckout;
   }
 
-  @Post('cart/:customerId/add')
-  async addToCart(@Param('customerId') customerId: string, @Body() product: any) {
-    try {
-      return await this.shopifyService.addToCart(customerId, product);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+  @Post(':id/confirm-order')
+  async confirmOrder(@Param('id') checkoutId: string): Promise<any> {
+    const completedCheckout = await this.customerService.completeCheckout(checkoutId);
+    return completedCheckout;
   }
 
-  @Delete('cart/:customerId/delete/:productId')
-  async deleteFromCart(@Param('customerId') customerId: string, @Param('productId') productId: string) {
-    try {
-      return await this.shopifyService.deleteFromCart(customerId, productId);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
 
-  @Patch('cart/:customerId/edit')
-  async editCart(@Param('customerId') customerId: string, @Body() cartData: any) {
-    try {
-      return await this.shopifyService.editCart(customerId, cartData);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
 }
-
-
