@@ -7,7 +7,7 @@ import { JwtStrategy } from 'src/utils/guard/jwt.strategy';
 import { LocalStrategy } from 'src/utils/guard/local.strategy';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-
+import { ShopifyService } from 'src/shopify/shopify.service';
 @Module({
   imports: [
     PassportModule,
@@ -16,7 +16,7 @@ import { UsersService } from './users.service';
     }),
   ],
   controllers: [UsersController],
-  providers: [UsersService, AuthService, LocalStrategy, JwtStrategy],
+  providers: [UsersService, AuthService, ShopifyService,LocalStrategy, JwtStrategy],
   exports: [UsersService],
 
 })
