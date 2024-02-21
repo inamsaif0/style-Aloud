@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Users } from '../libs/database/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { ShopifyService } from 'src/shopify/shopify.service';
 import { ApproveOtpDto, GuestDto, PhoneNumberDto, ProfileInformationDto } from './dto/create-auth.dto';
 import { PetProfile } from 'src/libs/database/entities/pet-profile.entity';
 import { Guest } from 'src/libs/database/entities/guest.entity';
@@ -11,6 +12,7 @@ import { Guest } from 'src/libs/database/entities/guest.entity';
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private shopifyService: ShopifyService,
     private jwtService: JwtService
   ) { }
 

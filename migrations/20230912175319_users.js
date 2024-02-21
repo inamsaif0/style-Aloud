@@ -16,6 +16,7 @@ exports.up = function (knex) {
             table.string('active_role', 255).nullable().defaultTo('user');
             table.string('role', 255).nullable().defaultTo('user');
             table.string('phone_number', 255).nullable(); 
+            table.string('customer_id', 255).nullable(); 
             table.string('dob', 255).nullable(); 
             table.boolean('is_verified').defaultTo(false);
         })
