@@ -203,25 +203,30 @@
 // shopify.service.ts
 
 import { Injectable } from '@nestjs/common';
-import * as Shopify from 'shopify-api-node';
-
+// import * as Shopify from 'shopify-api-node';
+import '@shopify/shopify-api/adapters/node';
+import {shopifyApi, LATEST_API_VERSION} from '@shopify/shopify-api';
 @Injectable()
 export class ShopifyService {
   private shopify: any;
 
   constructor() {
-    // Initialize Shopify client with your Shopify API credentials
-    console.log(process.env.SHOP_NAME,process.env.SHOP_API_KEY,  process.env.SHOP_PASSWORD)
-    this.shopify = new Shopify({
-      shopName: process.env.SHOP_NAME,
-      apiKey: process.env.SHOP_API_KEY,
-      password: process.env.SHOP_PASSWORD,
-    });
+
+    this.initializeShopifyApi();
   }
 
+  private initializeShopifyApi() {
+    this.shopify = shopifyApi({
+      apiKey: process.env.SHOP_API_KEY,
+      apiSecretKey: process.env.SHOP_PASSWORD,
+      scopes: ['read_products', 'update_products'],
+      hostName: 'fabricforu.myshopify.com',
+      apiVersion: LATEST_API_VERSION, // Specify the Shopify API version you want to use
+      isEmbeddedApp: false, //  this according to whether your app is embedded in the Shopify admin
+    });
+  }
   async createCustomer(customerData: any): Promise<any> {
-    // Implement logic to create a customer in Shopify
-    // Example:
+    console.log(this.shopify)
     const createdCustomer = await this.shopify.customer.create(customerData);
     // return createdCustomer;
     throw new Error('Not implemented');
