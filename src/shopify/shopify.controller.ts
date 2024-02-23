@@ -1,22 +1,37 @@
 // customer.controller.ts
 
-import { Controller, Post, Body, Param, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, UseInterceptors } from '@nestjs/common';
 import { ShopifyService } from './shopify.service';
-@Controller('shopify')
+import { CustomerDto } from './dto/create-shopify.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+@Controller('/api/shopify')
 export class ShopifyController {
   
   constructor(private readonly customerService: ShopifyService) {}
 
   // this is to register customer in shopify
-  @Post('register')
-  async registerCustomer(@Body() customerData: any): Promise<any> {
+  @UseInterceptors(FileInterceptor(''))
+  @Post('/hello')
+  async registerCustomer(
+    @Body() dto: CustomerDto
+  ): Promise<any> {
     // Assuming customerData includes fields like name, email, address, etc.
     // You need to implement validation and error handling here
     try {
-      const customer = await this.customerService.createCustomer(customerData);
+      const customer = await this.customerService.auth(dto);
       return { success: true, customer };
     } catch (error) {
       return { success: false, message: error.message };
+    }
+  }
+
+  @Post('auth')
+  async auth(){
+    try{
+
+    }
+    catch(error){
+
     }
   }
 

@@ -16,6 +16,7 @@ import { ShopifyService } from 'src/shopify/shopify.service';
 import { v4 as uuid } from 'uuid';
 import { PetProfile } from 'src/libs/database/entities/pet-profile.entity';
 import axios from 'axios';
+import { CustomerDto } from 'src/shopify/dto/create-shopify.dto';
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -70,7 +71,7 @@ export class UsersService {
       otp: '1234',
       active_role: dto.active_role
     });
-    let Customer:any = await this.shopifyService.createCustomer(users)
+    // let Customer:any = await this.shopifyService.auth()
     let objUser: any = {};
     objUser.token_type = jwtConstants.token_type;
     objUser.token = this.jwtService.sign(users.toJSON());

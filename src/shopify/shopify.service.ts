@@ -203,19 +203,27 @@
 // shopify.service.ts
 
 import { Injectable } from '@nestjs/common';
-// import * as Shopify from 'shopify-api-node';
+import * as Shopify from 'shopify-api-node';
 import '@shopify/shopify-api/adapters/node';
-import {shopifyApi, LATEST_API_VERSION} from '@shopify/shopify-api';
+import { shopifyApi, LATEST_API_VERSION, DataType } from '@shopify/shopify-api';
+import axios from 'axios';
+import { CustomerDto } from './dto/create-shopify.dto';
 @Injectable()
 export class ShopifyService {
   private shopify: any;
+  private readonly shopifyUrl = `https://fabricforu.myshopify.com/admin/api/2023-10/customers.json`;
+  private readonly apiKey = process.env.SHOP_API_KEY;
+  private readonly password = process.env.SHOP_PASSWORD;
 
   constructor() {
 
     this.initializeShopifyApi();
+
   }
 
   private initializeShopifyApi() {
+
+    console.log(process.env.SHOP_NAME, process.env.SHOP_API_KEY, process.env.SHOP_PASSWORD)
     this.shopify = shopifyApi({
       apiKey: process.env.SHOP_API_KEY,
       apiSecretKey: process.env.SHOP_PASSWORD,
@@ -224,7 +232,22 @@ export class ShopifyService {
       apiVersion: LATEST_API_VERSION, // Specify the Shopify API version you want to use
       isEmbeddedApp: false, //  this according to whether your app is embedded in the Shopify admin
     });
+
+    console.log(this.shopify)
   }
+
+    async auth(dto: CustomerDto): Promise<any> {
+      try {
+        console.log('ssssssssssssssssssssss')
+
+        const client = new this.shopify.clients.Rest({session:'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'});
+        
+      } catch (error) {
+        throw error;
+      }
+    }
+  
+
   async createCustomer(customerData: any): Promise<any> {
     console.log(this.shopify)
     const createdCustomer = await this.shopify.customer.create(customerData);

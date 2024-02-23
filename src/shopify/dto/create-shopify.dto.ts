@@ -36,4 +36,24 @@ export class CheckoutDto {
     readonly paymentMethod: string;
     readonly cart: CartDto;
   }
+
+export class CustomerDto {
+  @IsNotEmpty()
+  first_name:string
+
+  @IsNotEmpty()
+  last_name:string
+
+  @IsNotEmpty()
+  email:string
+
+  @IsNotEmpty()
+  phone:string
+
+  @IsNotEmpty()
+  password:string
+
+  @IsNotEmpty()
+  password_confirmation:string
+}
       
