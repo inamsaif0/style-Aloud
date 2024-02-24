@@ -68,9 +68,8 @@ export class UsersService {
       profile_picture: allFiles?.length > 0 ? JSON.stringify(allFiles) : null,
       device_token: dto.device_token,
       otp: '1234',
-      active_role: dto.active_role
     });
-    let Customer:any = await this.shopifyService.createCustomer(users)
+    // let Customer:any = await this.shopifyService.createCustomer(users)
     let objUser: any = {};
     objUser.token_type = jwtConstants.token_type;
     objUser.token = this.jwtService.sign(users.toJSON());
