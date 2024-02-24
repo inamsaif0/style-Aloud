@@ -5,7 +5,7 @@
 
 // // @Injectable()
 // // export class ShopifyService {
-//   // private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+//   // private readonly shopifyApiUrl = '';
 // //   private readonly axiosInstance: AxiosInstance;
 
 // //   constructor() {
@@ -64,7 +64,7 @@
 // @Injectable()
 // export class ShopifyService {
 //   private shopify:any;
-//   private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+//   private readonly shopifyApiUrl = '';
 //   private readonly axiosInstance: AxiosInstance;
 
 //   constructor(private readonly configService: ConfigService) {
@@ -77,10 +77,10 @@
 
 //   private initializeShopifyApi() {
 //     this.shopify = shopifyApi({
-//       apiKey: 'e102b127e425a798ff2782d6314f18b7', 
-//       apiSecretKey: '514ed82d68546411ae191b6ac5391335',
+//       apiKey: '', 
+//       apiSecretKey: '',
 //       scopes: ['read_products', 'update_products', 'delete_products'],
-//       hostName: 'fabricforu.myshopify.com',
+//       hostName: '',
 //       apiVersion: LATEST_API_VERSION, // Specify the Shopify API version you want to use
 //       isEmbeddedApp: false, // Adjust this according to whether your app is embedded in the Shopify admin
 //     });
