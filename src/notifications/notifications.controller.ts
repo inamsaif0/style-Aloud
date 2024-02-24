@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UseGuards, Res, Req, HttpException, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UseGuards, Res, Req, HttpException, HttpCode, HttpStatus, UploadedFile } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto, NotificationDto, SeenDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/utils/guard/jwt-auth.guard';
 import { STATUS_CODES } from 'http';
 import { Request, Response } from 'express';
 import { ResponseHelper } from 'src/utils/helper/response.helper';
+import { InterceptorHelper } from 'src/utils/helper/interceptors/custom-files-interceptor';
 
 @Controller('api/notifications')
 export class NotificationsController {
@@ -57,15 +58,15 @@ export class NotificationsController {
   }
 
   @Post('/send-notification-to-all')
-  @UseInterceptors(FileInterceptor(''))
-
+  @UseInterceptors(InterceptorHelper.globalFileInterceptorForImage('image', './public/user'))
   async sendNotificationToAll(
+    @UploadedFile() file,
     @Req() req: Request,
     @Res() res: Response,
     @Body() NotificationDto: NotificationDto,
   ){
       try{
-          const data =  await this.NotificationsService.sendNotificationToAll(NotificationDto)
+          const data =  await this.NotificationsService.sendNotificationToAll(NotificationDto, file)
           return ResponseHelper.success({ res, data })
               }
       catch(error){

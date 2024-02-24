@@ -33,11 +33,11 @@ export class NotificationsService {
         .delete();
     }
 
-    async sendNotificationToAll(notificationDto: NotificationDto)
+    async sendNotificationToAll(notificationDto: NotificationDto, file)
     {
         
         console.log(notificationDto)
-        const data:any = await this.notificationFunctions.sendToAll({item: notificationDto, notificationTitle:notificationDto.title, type:notificationDto.type})
+        const data:any = await this.notificationFunctions.sendToAll({item: notificationDto, notificationTitle:notificationDto.title, type:notificationDto.type, file})
         return data;
     }
 

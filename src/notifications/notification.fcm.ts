@@ -27,6 +27,9 @@ export class FCMHelper {
         await this.FcmSender(message);
     }
     static async FcmSender(message: any){
+    console.log(serverKey, fcm)
+
+        console.log(message)
         fcm.send(message,  (response: any) => {
             try{
                 if(response){

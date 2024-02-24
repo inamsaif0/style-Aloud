@@ -13,6 +13,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     async validate (req: Request, email: string, password: string): Promise<any> {
         let bodyReq: any = req.body;
+        console.log('hello',bodyReq)
         if (isUndefined(bodyReq.device_token)) {
             throw new HttpException(
                 {

@@ -18,7 +18,7 @@ export class NotificationFunction {
     ) { }
 
 
-    async sendToAll({item, notificationTitle, type}) {
+    async sendToAll({item, notificationTitle, type, file}) {
         try {
             let title: any = `${notificationTitle}`
             // let body: any = `${item}`
@@ -31,7 +31,7 @@ export class NotificationFunction {
                 // receivedIds: receiver_ids,
                 type: type,
                 relatedType: "promotion",
-                // related_id:item.id,
+                image: file,
                 title: notificationTitle,
 
             })
@@ -154,6 +154,7 @@ export class NotificationFunction {
     //   }
     private insertAllNotifications = async ({
         // body,
+        image,
         text,
         type,
         relatedType,
@@ -163,12 +164,14 @@ export class NotificationFunction {
         try {
             let notification: any;
             notification = new Notification();
-            // notification.body = body;
+            // notification.detail = body;
             notification.text = text;
             notification.type = type;
             notification.related_type = relatedType;
-            // notification.title = title;
+            notification.body = image ? 'user/' + image.filename : null
 
+
+            // notification.title = title;
             notification = await Notification.query().insertAndFetch(notification);
             let userIds:any = await Helper.getAllIds()
             // return userIds
