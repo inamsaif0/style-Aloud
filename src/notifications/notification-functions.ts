@@ -168,7 +168,7 @@ export class NotificationFunction {
             notification.text = text;
             notification.type = type;
             notification.related_type = relatedType;
-            notification.body = image ? 'user/' + image.filename : null
+            notification.image = image ? 'user/' + image.filename : null
 
 
             // notification.title = title;
