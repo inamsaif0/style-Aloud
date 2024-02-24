@@ -246,7 +246,7 @@ export class NotificationFunction {
                 let allUsers: any = receiver_ids.reduce((acc, curr) => {
                     acc.push({
                         notification_id: notification.id,
-                        receiver_ids: curr
+                        receiver_id: curr
                     });
                     return acc;
                 }, []);
