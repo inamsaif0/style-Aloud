@@ -165,7 +165,7 @@ export class NotificationFunction {
             let notification: any;
             notification = new Notification();
             // notification.detail = body;
-            notification.text = text;
+            // notification.text = text;
             notification.type = type;
             notification.related_type = relatedType;
             notification.image = image ? 'user/' + image.filename : null
