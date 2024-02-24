@@ -258,7 +258,10 @@ export class UsersService {
     });
 
     await EmailHelper.sendOtpEmail(otpDto.email, generateOtp);
-    return 'check your email for otp';
+    return {
+      otp: generateOtp,
+      message: 'check your email for the otp'
+    };
   }
   async changePassword(changePasswordDto: ChangePasswordDto) {
     let userItem: any = await Users.query()
