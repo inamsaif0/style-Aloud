@@ -1,11 +1,11 @@
 const FCM = require('fcm-node')
 const dotenv =  require('dotenv')
-const serverKey = process.env.FCM_SERVER_KEY;
+dotenv.config(); // Load environment variables from .env file
 
-const fcm = FCM(serverKey)
 
 
 export class FCMHelper {
+    
     static async sendNotificationWithTitleBody({deviceToken, notification, title , body}) {
         let message  = {
             to: deviceToken,
@@ -17,7 +17,7 @@ export class FCMHelper {
         await this.FcmSender(message);
     }
     static async sendMultipleNotification({deviceTokens, notification, title, body }){
-        console.log('sssssssssssssssssssss')
+        // console.log('sssssssssssssssssssss')
         let message =  {
             registration_ids: deviceTokens,
             notification: {title, body},
@@ -27,9 +27,12 @@ export class FCMHelper {
         await this.FcmSender(message);
     }
     static async FcmSender(message: any){
-    console.log(serverKey, fcm)
+    // console.log(serverKey, fcm)
 
-        console.log(message)
+    const serverKey = process.env.FCM_SERVER_KEY;
+    console.log(serverKey)
+    const fcm = new FCM(serverKey);
+    console.log(fcm)
         fcm.send(message,  (response: any) => {
             try{
                 if(response){

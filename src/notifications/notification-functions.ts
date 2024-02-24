@@ -175,9 +175,9 @@ export class NotificationFunction {
             notification = await Notification.query().insertAndFetch(notification);
             let userIds:any = await Helper.getAllIds()
             // return userIds
-            console.log('this is inam', notification,userIds)
+            // console.log('this is inam', notification,userIds)
             // this.eventEmitter.emit('send-notification')
-            console.log( userIds ,notification, relatedType,  text, 'dddd')
+            // console.log( userIds ,notification, relatedType,  text, 'dddd')
              this.eventEmitter.emit('send-multiple-notifications', { receiver_ids: userIds ,notification, relatedType, body: text })
 
             return notification;
@@ -242,7 +242,7 @@ export class NotificationFunction {
         try {
             console.log('inam')
             if (receiver_ids?.length > 0) {
-                console.log('jsjsjssjjssjsjsj')
+                // console.log('jsjsjssjjssjsjsj')
                 let allUsers: any = receiver_ids.reduce((acc, curr) => {
                     acc.push({
                         notification_id: notification.id,
@@ -252,7 +252,7 @@ export class NotificationFunction {
                 }, []);
 
                 let deviceTokens: any = await Helper.multipleDeviceTokenByGuest({ids:receiver_ids})
-                console.log(deviceTokens, 'this is device token')
+                // console.log(deviceTokens, 'this is device token')
                 await FCMHelper.sendMultipleNotification({ deviceTokens, notification, title: title, body: body })
                 await NotificationReceiver.query().insertGraph(allUsers)
             }
