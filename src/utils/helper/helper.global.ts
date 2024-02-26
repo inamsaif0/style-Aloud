@@ -52,6 +52,7 @@ export class Helper {
   }
   static async multipleDeviceTokenByGuest ({ids}) {
     console.log(ids)
+    
     let userIds:any = await Guest.query().select("device_token").whereNotNull("device_token").findByIds(ids)
     
     return userIds;

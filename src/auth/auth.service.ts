@@ -28,12 +28,33 @@ export class AuthService {
       user_details: user
     };
   }
-  async registerGuest(dto: GuestDto){
-    let data:any = await Guest.query().insertAndFetch({
-      device_token: dto.device_token
-    }) 
-    console.log('this guest is added and this is the data', data)
-    return data
+  async registerGuest(dto: GuestDto) {
+    try {
+      // Check if a device token already exists for the guest
+      const existingGuest = await Guest.query()
+        .where('device_token', dto.device_token)
+        .first();
+
+      if (existingGuest) {
+        console.log('already exist')
+        // If a guest with the same device token exists, delete it
+        await Guest.query()
+          .delete()
+          .where('device_token', dto.device_token);
+      }
+
+      // Add the new guest with the device token
+      const data = await Guest.query().insertAndFetch({
+        device_token: dto.device_token
+      });
+
+      console.log('This guest is added and this is the data', data);
+      return data;
+    } catch (error) {
+      // Handle any errors that may occur during the database operation
+      console.error('Error registering guest:', error);
+      throw error;
+    }
   }
   async validateUser(email: string, pass: string, deviceToken: string): Promise<any> {
     let user: any = await this.usersService.findOne(email, deviceToken);
