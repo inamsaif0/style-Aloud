@@ -50,21 +50,23 @@ export class Helper {
     // let users: any = await Users.query().where('id', userId).first();
     // return userIds?das  .device_token ? users.device_token : null
   }
-  static async multipleDeviceTokenByGuest ({ids}) {
-    console.log(ids)
+  static async multipleDeviceTokenByGuest({ ids }) {
+    try {
+        // Query the Guest table for device tokens associated with the provided IDs
+        let userIds: any[] = await Guest.query()
+                                       .select("device_token")
+                               
 
-    let userIds:any = await Guest.query().select("device_token").whereNotNull("device_token").findByIds(ids)
-    // console.log('this is iaaaaaaaaaaaaaaaaaa',userIds)
-    console.log('hello',userIds)
-    return userIds;
+        // Extract device tokens from the array of objects
+        let deviceTokens: string[] = userIds.map(user => user.device_token);
+        
+        console.log('Device tokens:', deviceTokens);
 
- // for (const iterator of ids) {
-   
- // }
-
- // let  userIds = userIds.filter(x=>x.device_token != null ).map((x).de)
- // let users: any = await Users.query().where('id', userId).first();
- // return userIds?das  .device_token ? users.device_token : null
+        return deviceTokens;
+    } catch (error) {
+        console.error('Error fetching device tokens:', error);
+        throw error;
+    }
 }
 }
 
