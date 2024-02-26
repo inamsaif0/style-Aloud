@@ -30,7 +30,7 @@ export class Helper {
 
   static async getAllIds () {
     let userIds:any = await Guest.query().select("id")
-
+    console.log(userIds)
     return userIds;
   }
   static async deviceTokenByUsers (userId) {
@@ -52,9 +52,10 @@ export class Helper {
   }
   static async multipleDeviceTokenByGuest ({ids}) {
     console.log(ids)
-    
+
     let userIds:any = await Guest.query().select("device_token").whereNotNull("device_token").findByIds(ids)
-    
+    // console.log('this is iaaaaaaaaaaaaaaaaaa',userIds)
+    console.log('hello',userIds)
     return userIds;
 
  // for (const iterator of ids) {
