@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UseGuards, Res, Req, HttpException, HttpCode, HttpStatus, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UseGuards, Res, Req, HttpException, HttpCode, HttpStatus, UploadedFile, Query } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto, NotificationDto, SeenDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -22,15 +22,15 @@ export class NotificationsController {
     @Body() seenDto: SeenDto
   ) {
     try {
-      const data : any = await this.NotificationsService.seenSingleNotification(seenDto, req);
-      if(!data){
+      const data: any = await this.NotificationsService.seenSingleNotification(seenDto, req);
+      if (!data) {
         throw new HttpException('no data found', HttpStatus.NOT_FOUND)
       }
 
       return data;
     } catch (err) {
       console.log(err, 'error');
-        return err
+      return err
     }
   }
 
@@ -41,20 +41,36 @@ export class NotificationsController {
     @Req() req: Request,
     @Res() res: Response,
     @Body() SeenDto: SeenDto,
-  ){
-      try{
-          const data =  await this.NotificationsService.seenMultipleNotifications(SeenDto, req)
-          if(!data){
-            throw new HttpException('no data found', HttpStatus.NOT_FOUND)
-          }
+  ) {
+    try {
+      const data = await this.NotificationsService.seenMultipleNotifications(SeenDto, req)
+      if (!data) {
+        throw new HttpException('no data found', HttpStatus.NOT_FOUND)
+      }
 
       return data;
 
-      }
-      catch(err){
-            console.log(err);
-            return err;
-      }
+    }
+    catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  @Get('/get-all-notifications')
+  async getAllNotification(
+    @Query() query,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try{
+        const notifications:any = await this.NotificationsService.getAllNotifications({ req, query })
+        return ResponseHelper.success({ res, data: notifications })
+    }
+    catch(error){
+      return ResponseHelper.error({ res, req, error })
+
+    }
   }
 
   @Post('/send-notification-to-all')
@@ -64,13 +80,13 @@ export class NotificationsController {
     @Req() req: Request,
     @Res() res: Response,
     @Body() NotificationDto: NotificationDto,
-  ){
-      try{
-          const data =  await this.NotificationsService.sendNotificationToAll(NotificationDto, file)
-          return ResponseHelper.success({ res, data })
-              }
-      catch(error){
-        return ResponseHelper.error({ res, req, error })
-      }
+  ) {
+    try {
+      const data = await this.NotificationsService.sendNotificationToAll(NotificationDto, file)
+      return ResponseHelper.success({ res, data })
+    }
+    catch (error) {
+      return ResponseHelper.error({ res, req, error })
+    }
   }
 }

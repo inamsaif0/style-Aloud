@@ -24,8 +24,8 @@ export class NotificationFunction {
             // let body: any = `${item}`
             
            return await this.insertAllNotifications({
-                // body: item,
-                text: title,
+                // text: detail,
+                text: item.detail,
                 // source_id: item,
                 // sender_id: senderId,
                 // receivedIds: receiver_ids,
@@ -165,7 +165,7 @@ export class NotificationFunction {
             let notification: any;
             notification = new Notification();
             // notification.detail = body;
-            // notification.text = text;
+            notification.detail = text;
             notification.type = type;
             notification.related_type = relatedType;
             notification.image = image ? 'user/' + image.filename : null

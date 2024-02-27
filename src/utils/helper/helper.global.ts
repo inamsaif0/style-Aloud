@@ -53,8 +53,7 @@ export class Helper {
   static async multipleDeviceTokenByGuest({ ids }) {
     try {
         // Query the Guest table for device tokens associated with the provided IDs
-        let userIds: any[] = await Guest.query()
-                                       .select("device_token")
+        let userIds: any[] = await Guest.query().select("device_token")
                                
 
         // Extract device tokens from the array of objects
