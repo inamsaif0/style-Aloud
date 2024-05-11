@@ -1,7 +1,8 @@
 // product.dto.ts
 
-import { IsNotEmpty } from "class-validator";
-
+import { IsNotEmpty, isNotEmpty } from "class-validator";
+import { IsEmail, IsString, IsPhoneNumber, IsBoolean, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 // product.dto.ts
 export class ProductDto {
     readonly title: string;
@@ -9,6 +10,7 @@ export class ProductDto {
     readonly price: number;
     readonly category: string; // Added category field
   }
+
 export class CollectionsDto {
   @IsNotEmpty()
   collectionId: string
@@ -22,7 +24,7 @@ export class AddToCartDto {
 // cart.dto.ts
 export class CartDto {
     readonly items: CartItemDto[];
-  }
+}
 
 export class CartItemDto {
   readonly productId: number;
@@ -37,3 +39,61 @@ export class CheckoutDto {
     readonly cart: CartDto;
   }
       
+  // customer.dto.ts
+
+
+class AddressDto {
+  @IsString()
+  address1: string;
+
+  @IsString()
+  city: string;
+
+  @IsString()
+  province: string;
+
+  @IsPhoneNumber()
+  phone: string;
+
+  @IsString()
+  zip: string;
+
+  @IsString()
+  last_name: string;
+
+  @IsString()
+  first_name: string;
+
+  @IsString()
+  country: string;
+}
+
+export class CustomerDto {
+  @IsString()
+  first_name: string;
+
+  @IsString()
+  last_name: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsPhoneNumber()
+  phone: string;
+
+  @IsBoolean()
+  verified_email: boolean;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  addresses: [];
+
+  @IsString()
+  password: string;
+
+  @IsString()
+  password_confirmation: string;
+
+  @IsBoolean()
+  send_email_welcome: boolean;
+}
