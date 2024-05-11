@@ -75,4 +75,19 @@ export class NotificationsService {
 
         return query;
     }
+
+    async getAllNotifications(params:any = {}){
+        try {
+            let query: any =  Notification.query();
+            // Filter where title is not null
+            // return queryFriend
+            query.orderBy('id', 'desc'); // Order the query before pagination
+            return await Notification.pagination(query, params);
+        } catch (error) {
+            // Handle any errors here
+            console.error("Error in getAllNotifications:", error);
+            throw error; // Re-throw the error to be caught by the caller
+        }
+        // return data;
+    }
 }

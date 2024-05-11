@@ -30,7 +30,7 @@ export class Helper {
 
   static async getAllIds () {
     let userIds:any = await Guest.query().select("id")
-
+    console.log(userIds)
     return userIds;
   }
   static async deviceTokenByUsers (userId) {
@@ -50,19 +50,22 @@ export class Helper {
     // let users: any = await Users.query().where('id', userId).first();
     // return userIds?das  .device_token ? users.device_token : null
   }
-  static async multipleDeviceTokenByGuest ({ids}) {
-    console.log(ids)
-    let userIds:any = await Guest.query().select("device_token").whereNotNull("device_token").findByIds(ids)
-    
-    return userIds;
+  static async multipleDeviceTokenByGuest({ ids }) {
+    try {
+        // Query the Guest table for device tokens associated with the provided IDs
+        let userIds: any[] = await Guest.query().select("device_token")
+                               
 
- // for (const iterator of ids) {
-   
- // }
+        // Extract device tokens from the array of objects
+        let deviceTokens: string[] = userIds.map(user => user.device_token);
+        
+        console.log('Device tokens:', deviceTokens);
 
- // let  userIds = userIds.filter(x=>x.device_token != null ).map((x).de)
- // let users: any = await Users.query().where('id', userId).first();
- // return userIds?das  .device_token ? users.device_token : null
+        return deviceTokens;
+    } catch (error) {
+        console.error('Error fetching device tokens:', error);
+        throw error;
+    }
 }
 }
 
