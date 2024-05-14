@@ -20,6 +20,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ShopifyModule } from './shopify/shopify.module';
 // import { BillingsModule } from './billings/billings.module';
 import { KlarnaModule } from './klarna/klarna.module';
+import { ReviewModule } from './review/review.module';
+import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   controllers: [AppController, UsersController, ],
@@ -41,6 +44,6 @@ import { KlarnaModule } from './klarna/klarna.module';
     }),
     ConfigModule.forRoot({ isGlobal: true }),
 
-    AuthModule, UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, KlarnaModule ],
+    AuthModule, UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, KlarnaModule, ReviewModule, CartModule, OrderModule ],
 })
 export class AppModule { }
