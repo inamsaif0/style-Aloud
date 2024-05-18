@@ -14,7 +14,7 @@ export class CartController {
   @Post('/add-to-cart')
   async addToCart(@Body() createCartDto: CreateCartDto, @Req() req: Request, @Res() res: Response) {
     try{
-      let data = this.cartService.addToCart(createCartDto);
+      let data = await this.cartService.addToCart(createCartDto);
       return ResponseHelper.success({ res, data })
 
     }

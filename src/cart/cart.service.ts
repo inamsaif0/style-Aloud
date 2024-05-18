@@ -86,6 +86,7 @@ export class CartService {
       product_id: dto.product_id,
       count: dto.count
     });
+    console.log(data)
     return data;
   }
 
