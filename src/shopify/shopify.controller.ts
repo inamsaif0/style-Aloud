@@ -33,6 +33,7 @@ export class ShopifyController {
   async myFriends (@Body() dto: CollectionsDto, @Req() req: Request, @Res() res: Response) {
     try {
       const data = await this.customerService.getCollectionsProducts(dto);
+      console.log('from controller', data)
       return ResponseHelper.success({ res, data })
     } catch (error) {
       return ResponseHelper.error({ res, req, error })

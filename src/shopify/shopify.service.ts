@@ -70,12 +70,9 @@ export class ShopifyService {
             baseURL: this.shopifyApiUrl,
             timeout: 5000,
           });
-    this.initializeShopifyApi();
+  
   }
 
-  private initializeShopifyApi() {
-
-  }
 
   getShopify() {
     return this.shopify;
@@ -144,6 +141,10 @@ export class ShopifyService {
     }
     async getCollectionsProducts(dto:CollectionsDto) {
     const response: AxiosResponse = await this.axiosInstance.get(`/collections/${dto.collectionId}/products.json`);
+    return response.data;
+  }
+  async getProductbyId(productId:any) {
+    const response: AxiosResponse = await this.axiosInstance.get(`/products/${productId}/products.json`);
     return response.data;
   }
   async authenticateCustomer(credentials: any): Promise<any> {
