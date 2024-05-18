@@ -39,10 +39,11 @@ export class CartController {
     }
   }
    
+  @UseInterceptors(FileInterceptor(''))
   @Post('/increment-decrement-cart')
-  async incrementDecrementCart(@Body() IncreaseDecreaseCount: IncreaseDecreaseCount, req: Request, res: Response) {
+  async incrementDecrementCart(@Body() dto: IncreaseDecreaseCount,  @Req() req: Request, @Res() res: Response ) {
     try{
-      let data = this.cartService.IncrementDecrementCount(IncreaseDecreaseCount);
+      let data = await this.cartService.IncrementDecrementCount(dto);
       return ResponseHelper.success({ res, data })
 
     }

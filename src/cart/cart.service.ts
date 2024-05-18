@@ -86,7 +86,7 @@ export class CartService {
       product_id: dto.product_id,
       count: dto.count
     });
-    console.log(data)
+    
     return data;
   }
 
@@ -119,6 +119,7 @@ export class CartService {
   
 
   async IncrementDecrementCount(dto: IncreaseDecreaseCount) {
+    console.log(dto)
     let data = await Cart.query().updateAndFetchById(dto.element_id, {
       count: dto.count
     });
