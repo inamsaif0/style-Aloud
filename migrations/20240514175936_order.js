@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
     return knex.schema
-        .createTable('review', function (table) {
+        .createTable('order', function (table) {
             table.increments('id');
             table.string('order_id', 255).nullable();
             table.string('user_id', 255).nullable();
@@ -18,6 +18,6 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
 
-    return knex.schema.dropTable('review');
+    return knex.schema.dropTable('order');
 
 };
