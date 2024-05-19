@@ -22,7 +22,7 @@ export class ReviewController {
     return this.reviewService.findOne(+id);
   }
 
-  @Patch(':id')
+ @Patch(':id')
   update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
     return this.reviewService.update(+id, updateReviewDto);
   }

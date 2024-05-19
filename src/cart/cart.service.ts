@@ -62,6 +62,7 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { Cart } from 'src/libs/database/entities/cart.entity';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { ProductDto } from 'src/shopify/dto/create-shopify.dto';
 
 @Injectable()
 export class CartService {
@@ -75,13 +76,37 @@ export class CartService {
     });
   }
 
+  async getProductDetail(dto: ProductDto){
+    let data:any = await this.getProductbyId(dto.productId);
+    return data
+  }
   async getProductbyId(productId: any) {
     const response: AxiosResponse = await this.axiosInstance.get(`/products/${productId}.json`);
     return response.data.product; // Ensure only the product data is returned
   }
 
   async addToCart(dto: CreateCartDto) {
-    const cartItem:any = await Cart.query().where({ product_id: dto.product_id, user_id: dto.user_id }).first();
+
+    if(dto.user_id){
+      const cartItem:any = await Cart.query().where({ product_id: dto.product_id, user_id: dto.user_id }).first();
+      if(cartItem){
+        let data = await Cart.query().updateAndFetchById(cartItem.id, {
+          count: Number(cartItem.count) + Number(dto.count)
+        });
+      return data;
+  
+      }
+      let data = await Cart.query().insertAndFetch({
+        user_id: dto.user_id,
+        product_id: dto.product_id,
+        count: Number(dto.count),
+        
+      });
+      return data;
+    }
+
+    const cartItem:any = await Cart.query().where({ product_id: dto.product_id, device_token: dto.device_token }).first();
+    
     if(cartItem){
       let data = await Cart.query().updateAndFetchById(cartItem.id, {
         count: Number(cartItem.count) + Number(dto.count)
@@ -89,48 +114,61 @@ export class CartService {
     return data;
 
     }
-    let data = await Cart.query().insertAndFetch({
-      user_id: dto.user_id,
-      product_id: dto.product_id,
-      count: Number(dto.count)
-    });
-    
-    return data;
-  }
+      let data = await Cart.query().insertAndFetch({
+        product_id: dto.product_id,
+        count: Number(dto.count),
+        device_token: dto.device_token
+      });
+      return data
+    }
 
-  async getCartbyUserId(dto: GetCart) {
-    const obj = {
-      user_id: dto.user_id,
-      products: []
-    };
-  
-    const data = await Cart.query().where({ user_id: dto.user_id });
-  
-    // Fetch all product details in parallel
-    const productPromises = data.map(async (val: any) => {
-      const product = await this.getProductbyId(val.product_id);
-      return {
-        id: product.id,
-        title: product.title,
-        price: product.variants[0]?.price, // Assuming you want the price of the first variant
-        image: product.images[0]?.src, // Adding the first image URL
-        quantity: val.count // Including the quantity from the cart
+    async getCartbyUserId(dto: GetCart) {
+      const obj = {
+        user_id: dto.user_id,
+        products: []
       };
-    });
-  
-    // Wait for all product details to be fetched
-    obj.products = await Promise.all(productPromises);
-  
-    console.log(obj);
-    return obj;
-  }
-  
+      
+      let data;
+    
+      if(dto.device_token){
+        data = await Cart.query().where({ device_token: dto.device_token });
+      } else if(dto.user_id) {
+        data = await Cart.query().where({ user_id: dto.user_id });
+      }
+    
+      if (data && data.length > 0) {
+        // Fetch all product details in parallel
+        const productPromises = data.map(async (val: any) => {
+          const product = await this.getProductbyId(val.product_id);
+          const unitPrice = parseFloat(product.variants[0]?.price || '0');
+          const quantity = val.count;
+          const totalPrice = unitPrice * quantity;
+    
+          return {
+            id: val.id,
+            productId: product.id,
+            title: product.title,
+            unitPrice: unitPrice, // Unit price of the product
+            totalPrice: totalPrice, // Total price based on quantity
+            image: product.images[0]?.src, // Adding the first image URL
+            quantity: quantity // Including the quantity from the cart
+          };
+        });
+    
+        // Wait for all product details to be fetched
+        obj.products = await Promise.all(productPromises);
+      }
+    
+      console.log(obj);
+      return obj;
+    }
 
   async IncrementDecrementCount(dto: IncreaseDecreaseCount) {
     console.log(dto)
     let data = await Cart.query().updateAndFetchById(dto.element_id, {
-      count: dto.count
+      count: Number(dto.count),
     });
+    console.log(data)
     return data;
   }
 }

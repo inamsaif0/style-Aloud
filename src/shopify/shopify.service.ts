@@ -56,7 +56,7 @@ import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {shopifyApi, LATEST_API_VERSION} from '@shopify/shopify-api';
 import { ConfigService } from '@nestjs/config';
-import { CollectionsDto } from './dto/create-shopify.dto';
+import { CollectionsDto, ProductDto } from './dto/create-shopify.dto';
 
 
 @Injectable()
@@ -68,24 +68,24 @@ export class ShopifyService {
   constructor(private readonly configService: ConfigService) {
     this.axiosInstance = axios.create({
             baseURL: this.shopifyApiUrl,
-            timeout: 5000,
+            timeout: 10000,
           });
-  
   }
-
 
   getShopify() {
     return this.shopify;
   }
   async filterCollectionsByKeywords(collections: any, keywords: string[]){
     return collections.smart_collections.filter(collection => {
+      console.log(collection)
         const title = collection.title.toLowerCase();
+        console.log(title)
         return keywords.some(keyword => title.includes(keyword.toLowerCase()));
     });
 }
       async getCollections() {
       const response: any = await this.axiosInstance.get(`/smart_collections.json`);
-      const filteredCollections = this.filterCollectionsByKeywords(response.data, ["MENS", "GIRL", "WOMENS", "limelight"]);
+      const filteredCollections = await this.filterCollectionsByKeywords(response.data, [ "GIRL", "WOMENS", "KIDS", "MENS"]);
       return filteredCollections;
     }
 
@@ -143,10 +143,11 @@ export class ShopifyService {
     const response: AxiosResponse = await this.axiosInstance.get(`/collections/${dto.collectionId}/products.json`);
     return response.data;
   }
-  async getProductbyId(productId:any) {
-    const response: AxiosResponse = await this.axiosInstance.get(`/products/${productId}/products.json`);
+  async getProductbyId(dto: ProductDto) {
+    const response: AxiosResponse = await this.axiosInstance.get(`/products/${dto.productId}.json`);
     return response.data;
   }
+
   async authenticateCustomer(credentials: any): Promise<any> {
     // Implement authentication logic using Shopify SDK
     // You can use OAuth flow for authentication

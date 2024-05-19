@@ -4,16 +4,20 @@ import { IsNotEmpty, isNotEmpty } from "class-validator";
 import { IsEmail, IsString, IsPhoneNumber, IsBoolean, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 // product.dto.ts
-export class ProductDto {
-    readonly title: string;
-    readonly description: string;
-    readonly price: number;
-    readonly category: string; // Added category field
-  }
+// export class ProductDto {
+//     readonly title: string;
+//     readonly description: string;
+//     readonly price: number;
+//     readonly category: string; // Added category field
+//   }
 
 export class CollectionsDto {
   @IsNotEmpty()
   collectionId: string
+}
+export class ProductDto {
+  @IsNotEmpty()
+  productId: string
 }
 // add-to-cart.dto.ts
 export class AddToCartDto {

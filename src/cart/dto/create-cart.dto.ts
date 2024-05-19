@@ -1,27 +1,37 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateCartDto {
 
     @IsNotEmpty()
     product_id: string
 
-    @IsNotEmpty()
+    @IsOptional()
     user_id: string
 
     @IsNotEmpty()
     count: number
+
+    @IsOptional()
+    device_token: string
+
+    @IsNotEmpty()
+    price: number
+
 }
 
 export class IncreaseDecreaseCount {
     @IsNotEmpty()
-    count: string
+    count: number
 
     @IsNotEmpty()
     element_id: string
 }
 export class GetCart {
-    @IsNotEmpty()
+    @IsOptional()
     user_id: string
+
+    @IsOptional()
+    device_token: string
 }
 export class DeleteCartItem {
     @IsNotEmpty()
