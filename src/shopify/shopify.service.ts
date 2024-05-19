@@ -143,10 +143,25 @@ export class ShopifyService {
     const response: AxiosResponse = await this.axiosInstance.get(`/collections/${dto.collectionId}/products.json`);
     return response.data;
   }
+
   async getProductbyId(dto: ProductDto) {
-    const response: AxiosResponse = await this.axiosInstance.get(`/products/${dto.productId}.json`);
-    return response.data;
+    try {
+      const response: AxiosResponse = await this.axiosInstance.get(`/products/${dto.productId}.json`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching product by ID:', error.message);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      }
+      throw new Error('Error fetching product by ID');
+    }
   }
+
+
 
   async authenticateCustomer(credentials: any): Promise<any> {
     // Implement authentication logic using Shopify SDK
