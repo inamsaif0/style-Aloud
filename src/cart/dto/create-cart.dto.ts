@@ -9,7 +9,7 @@ export class CreateCartDto {
     user_id: string
 
     @IsNotEmpty()
-    count: string
+    count: number
 }
 
 export class IncreaseDecreaseCount {

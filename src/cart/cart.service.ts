@@ -81,10 +81,18 @@ export class CartService {
   }
 
   async addToCart(dto: CreateCartDto) {
+    const cartItem:any = await Cart.query().where({ product_id: dto.product_id, user_id: dto.user_id }).first();
+    if(cartItem){
+      let data = await Cart.query().updateAndFetchById(cartItem.id, {
+        count: Number(cartItem.count) + Number(dto.count)
+      });
+    return data;
+
+    }
     let data = await Cart.query().insertAndFetch({
       user_id: dto.user_id,
       product_id: dto.product_id,
-      count: dto.count
+      count: Number(dto.count)
     });
     
     return data;
