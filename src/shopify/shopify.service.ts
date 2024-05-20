@@ -54,92 +54,159 @@
 import '@shopify/shopify-api/adapters/node';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import {shopifyApi, LATEST_API_VERSION} from '@shopify/shopify-api';
+import { shopifyApi, LATEST_API_VERSION } from '@shopify/shopify-api';
 import { ConfigService } from '@nestjs/config';
 import { CollectionsDto, ProductDto } from './dto/create-shopify.dto';
 
 
 @Injectable()
 export class ShopifyService {
-  private shopify:any;
+  private shopify: any;
   private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
   private readonly axiosInstance: AxiosInstance;
 
   constructor(private readonly configService: ConfigService) {
     this.axiosInstance = axios.create({
-            baseURL: this.shopifyApiUrl,
-            timeout: 10000,
-          });
+      baseURL: this.shopifyApiUrl,
+      timeout: 10000,
+    });
   }
 
   getShopify() {
     return this.shopify;
   }
-  async filterCollectionsByKeywords(collections: any, keywords: string[]){
+  async filterCollectionsByKeywords(collections: any, keywords: string[]) {
+    console.log(collections.length)
     return collections.smart_collections.filter(collection => {
       console.log(collection)
-        const title = collection.title.toLowerCase();
-        console.log(title)
-        return keywords.some(keyword => title.includes(keyword.toLowerCase()));
+      const title = collection.title.toLowerCase();
+      console.log(title)
+      return keywords.some(keyword => title.includes(keyword.toLowerCase()));
     });
-}
-      async getCollections() {
-      const response: any = await this.axiosInstance.get(`/smart_collections.json`);
-      const filteredCollections = await this.filterCollectionsByKeywords(response.data, [ "GIRL", "WOMENS", "KIDS", "MENS"]);
-      return filteredCollections;
-    }
+  }
 
-    async getCollectionsByBrand() {
-      const collections = [
-        "Afrozeh",
-        "Al-Zohaib Textile",
-        "Alizeh Fashion",
-        "Amna Khadija",
-        "Anaya",
-        "Asim Jofa",
-        "Baroque",
-        "Beechtree",
-        "Bin Ilyas",
-        "Bonanza",
-        "Charizma",
-        "Elaf Premium",
-        "Eshaisha",
-        "Farasha",
-        "Firdous Concept",
-        "Gul Ahmed",
-        "Iznik",
-        "J.",
-        "Jazmin",
-        "Kafh Premium",
-        "Khaadi",
-        "LALA",
-        "LIMELIGHT",
-        "Lakhani",
-        "Maria.B",
-        "Mausummary",
-        "Moti's Fashion",
-        "Munira Designer",
-        "Ochre Clothing",
-        "RajBari",
-        "Ramsha",
-        "Rang Rasiya",
-        "Rangz",
-        "Riaz Arts",
-        "Sana Safinaz",
-        "Sapphire",
-        "Soghat Creation",
-        "Tawakkal Fabrics",
-        "The Ocean",
-        "Vantona",
-        "Varun",
-        "Xenia Formals",
-        "Z. S Textiles"
-      ];
-      const response: any = await this.axiosInstance.get(`/smart_collections.json`);
-      const filteredCollections = this.filterCollectionsByKeywords(response.data, collections);
-      return filteredCollections;
-    }
-    async getCollectionsProducts(dto:CollectionsDto) {
+  async filterCollectionsByKeyword(collections: any, keywords: string[]) {
+    console.log(collections)
+    return collections.smart_collections.filter(collection => {
+      console.log(collection)
+      const title = collection.handle.toLowerCase();
+      console.log(title)
+      return keywords.some(keyword => title.includes(keyword.toLowerCase()));
+    });
+  }
+  async getCollections() {
+    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    // return response.data;
+    const filteredCollections = await this.filterCollectionsByKeyword(response.data, ["girl", "kids", "CHILDRENS", "kitchen-accessories", 'bedding']);
+    return filteredCollections;
+  }
+
+  async getHomeAccessoriess() {
+    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    const keywords = [
+      "kitchen-accessories", "bedding",
+      "Bedding", "Bedspread", "Duvet Cover Set", "Filled Pillows",
+      "Fitted Sheet", "Flat Sheet", "Pillowcase", "Throw",
+      "Bath linen", "Towels", "Home Accessories", "Curtains",
+      "Cushion Cover", "Filled Cushion", "Kitchen Accessories"
+    ];
+
+    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
+    return filteredCollections;
+  }
+
+  async getBeddingAccessories() {
+    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    const keywords = [
+     "Bedspread", "Duvet Cover Set", "Filled Pillows",
+      "Fitted Sheet", "Flat Sheet", "Pillowcase",  "Throw",
+    ];
+
+    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
+    return filteredCollections;
+  }
+
+  async getBathLineAccessories() {
+    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    const keywords = [
+       "Bath linen"
+    ];
+
+    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
+    return filteredCollections;
+  }
+  async getHomeAccessories() {
+    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    const keywords = [
+      "Curtains",
+      "Cushion Cover", 
+      "Filled Cushion"
+    ];
+
+    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
+    return filteredCollections;
+  }
+  async getKitchenAccessories() {
+    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    const keywords = [
+      "Kitchen Accessories"
+    ];
+
+    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
+    return filteredCollections;
+  }
+  async getCollectionsByBrand() {
+    const collections = [
+      "Afrozeh",
+      "Al-Zohaib Textile",
+      "Alizeh Fashion",
+      "Amna Khadija",
+      "Anaya",
+      "Asim Jofa",
+      "Baroque",
+      "Beechtree",
+      "Bin Ilyas",
+      "Bonanza",
+      "Charizma",
+      "Elaf Premium",
+      "Eshaisha",
+      "Farasha",
+      "Firdous Concept",
+      "Gul Ahmed",
+      "Iznik",
+      "J.",
+      "Jazmin",
+      "Kafh Premium",
+      "Khaadi",
+      "LALA",
+      "LIMELIGHT",
+      "Lakhani",
+      "Maria.B",
+      "Mausummary",
+      "Moti's Fashion",
+      "Munira Designer",
+      "Ochre Clothing",
+      "RajBari",
+      "Ramsha",
+      "Rang Rasiya",
+      "Rangz",
+      "Riaz Arts",
+      "Sana Safinaz",
+      "Sapphire",
+      "Soghat Creation",
+      "Tawakkal Fabrics",
+      "The Ocean",
+      "Vantona",
+      "Varun",
+      "Xenia Formals",
+      "Z. S Textiles"
+    ];
+    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    const filteredCollections = this.filterCollectionsByKeywords(response.data, collections);
+    return filteredCollections;
+  }
+
+  async getCollectionsProducts(dto: CollectionsDto) {
     const response: AxiosResponse = await this.axiosInstance.get(`/collections/${dto.collectionId}/products.json`);
     return response.data;
   }
@@ -161,8 +228,6 @@ export class ShopifyService {
     }
   }
 
-
-
   async authenticateCustomer(credentials: any): Promise<any> {
     // Implement authentication logic using Shopify SDK
     // You can use OAuth flow for authentication
@@ -172,6 +237,7 @@ export class ShopifyService {
     // You'll need to handle the OAuth flow in your NestJS application
     // For more details, refer to Shopify's OAuth documentation: https://shopify.dev/tutorials/authenticate-with-oauth
   }
+
   async registerCustomer(customerData: any): Promise<any> {
     try {
       const query = `mutation {
@@ -265,6 +331,6 @@ export class ShopifyService {
     }
   }
 }
-// shopify.service.ts
+
 
 

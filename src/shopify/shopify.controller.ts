@@ -19,10 +19,51 @@ export class ShopifyController {
       return ResponseHelper.error({ res, req, error })
     }
   }
+  
   @Get('/get-brand-collections')
   async brandCollections ( @Req() req: Request, @Res() res: Response) {
     try {
       const data = await this.customerService.getCollectionsByBrand();
+      return ResponseHelper.success({ res, data })
+    } catch (error) {
+      return ResponseHelper.error({ res, req, error })
+    }
+  }
+
+  @Get('/get-home-accessories-collections')
+  async homeCollections ( @Req() req: Request, @Res() res: Response) {
+    try {
+      const data = await this.customerService.getHomeAccessoriess();
+      return ResponseHelper.success({ res, data })
+    } catch (error) {
+      return ResponseHelper.error({ res, req, error })
+    }
+  }
+
+  @Get('/get-bedding-collections')
+  async beddingCollections ( @Req() req: Request, @Res() res: Response) {
+    try {
+      const data = await this.customerService.getBeddingAccessories();
+      return ResponseHelper.success({ res, data })
+    } catch (error) {
+      return ResponseHelper.error({ res, req, error })
+    }
+  }
+
+  @Get('/get-bath-line-collections')
+  async bathLineCollections ( @Req() req: Request, @Res() res: Response) {
+    try {
+      const data = await this.customerService.getBathLineAccessories();
+      return ResponseHelper.success({ res, data })
+    } catch (error) {
+      return ResponseHelper.error({ res, req, error })
+    }
+  }
+  
+  @Get('/get-kitchen-accessories-collections')
+  async kitchenCollections ( @Req() req: Request, @Res() res: Response) {
+    try {
+      const data = await this.customerService.getKitchenAccessories();
       return ResponseHelper.success({ res, data })
     } catch (error) {
       return ResponseHelper.error({ res, req, error })
