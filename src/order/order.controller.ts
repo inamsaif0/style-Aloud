@@ -8,13 +8,13 @@ import { CollectionsDto } from 'src/shopify/dto/create-shopify.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ResponseHelper } from 'src/utils/helper/response.helper';
 
-@Controller('order')
+@Controller('api/order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   
-  @Post()
-  @UseGuards(LocalAuthGuard)
+  @Post('/create-order')
+  // @UseGuards(LocalAuthGuard)
   async createOrder(@Body() createOrderDto: CreateOrderDto) {
     return this.orderService.createOrder(createOrderDto);
   }
