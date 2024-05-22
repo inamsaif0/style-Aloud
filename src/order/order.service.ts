@@ -15,25 +15,19 @@ export class OrderService {
       timeout: 5000,
     });
   }
-
   async createOrder(createOrderDto: CreateOrderDto) {
     const newOrder = {
       order: {
-        line_items: [
-          {
-            title: createOrderDto.line_items_title,
-            price: createOrderDto.line_items_price,
-            grams: createOrderDto.line_items_grams,
-            quantity: createOrderDto.line_items_quantity,
-          },
-        ],
-        transactions: [
-          {
-            kind: createOrderDto.transactions_kind,
-            status: createOrderDto.transactions_status,
-            amount: createOrderDto.transactions_amount,
-          },
-        ],
+        line_items: createOrderDto.line_items.map(item => ({
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        transactions: createOrderDto.transactions.map(transaction => ({
+          kind: transaction.kind,
+          status: transaction.status,
+          amount: transaction.amount,
+        })),
         currency: createOrderDto.currency,
         billing_address: {
           first_name: createOrderDto.billing_address_first_name,
@@ -63,19 +57,14 @@ export class OrderService {
         },
       },
     };
-
+  
     try {
       const response: AxiosResponse = await this.axiosInstance.post('/orders.json', newOrder);
-      if(response.data){
-        
-      }
       return response.data;
     } catch (error) {
       console.error('Error creating order:', error.response?.data || error.message);
       throw new Error('Could not create order');
     }
   }
-
-
 
 }
