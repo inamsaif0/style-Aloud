@@ -3,6 +3,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { Order } from 'src/libs/database/entities/order.entity';
 
 @Injectable()
 export class OrderService {
@@ -15,7 +16,7 @@ export class OrderService {
       timeout: 5000,
     });
   }
-  async createOrder(createOrderDto: CreateOrderDto) {
+  async createOrder(createOrderDto: CreateOrderDto, req, res) {
     const newOrder = {
       order: {
         line_items: createOrderDto.line_items.map(item => ({
@@ -57,10 +58,28 @@ export class OrderService {
         },
       },
     };
-  
+
     try {
       const response: AxiosResponse = await this.axiosInstance.post('/orders.json', newOrder);
-      return response.data;
+      let value: any;
+      let result:any
+      if (createOrderDto.device_token) {
+        value = await Order.query().insertAndFetch({
+          order_id: response.data.order.id,
+          device_token: createOrderDto.device_token,
+          amount: response.data.current_subtotal_price
+        })
+      }
+      else {
+        value = await Order.query().insertAndFetch({
+          order_id: response.data.order.id,
+          user_id: createOrderDto.user_id,
+          amount: response.data.order.current_subtotal_price
+        })
+      }
+      console.log(response.data.order.current_subtotal_price)
+      result = response.data
+      return {value,result};
     } catch (error) {
       console.error('Error creating order:', error.response?.data || error.message);
       throw new Error('Could not create order');
