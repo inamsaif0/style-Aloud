@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsArray, ValidateNested, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsArray, ValidateNested, IsString, IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class LineItemDto {
@@ -122,4 +122,12 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsString()
   customer_phone: string;
+
+
+  @IsOptional()
+  device_token: string
+
+
+  @IsOptional()
+  user_id : number
 }
