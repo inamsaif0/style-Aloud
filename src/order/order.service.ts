@@ -62,23 +62,23 @@ export class OrderService {
       const response: AxiosResponse = await this.axiosInstance.post('/orders.json', newOrder);
       let value: any;
       let result:any
-      if (createOrderDto.device_token) {
-        value = await Order.query().insertAndFetch({
-          order_id: response.data.order.id,
-          device_token: createOrderDto.device_token,
-          amount: response.data.current_subtotal_price
-        })
-      }
-      else {
-        value = await Order.query().insertAndFetch({
-          order_id: response.data.order.id,
-          user_id: createOrderDto.user_id,
-          amount: response.data.order.current_subtotal_price
-        })
-      }
+      // if (createOrderDto.device_token) {
+      //   value = await Order.query().insertAndFetch({
+      //     order_id: response.data.order.id,
+      //     device_token: createOrderDto.device_token,
+      //     amount: response.data.current_subtotal_price
+      //   })
+      // }
+      // else {
+      //   value = await Order.query().insertAndFetch({
+      //     order_id: response.data.order.id,
+      //     user_id: createOrderDto.user_id,
+      //     amount: response.data.order.current_subtotal_price
+      //   })
+      // }
       console.log(response.data.order.current_subtotal_price)
       result = response.data
-      return {value,result};
+      return result;
     } catch (error) {
       console.error('Error creating order:', error.response?.data || error.message);
       throw new Error('Could not create order');
