@@ -4,7 +4,6 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Order } from 'src/libs/database/entities/order.entity';
-
 @Injectable()
 export class OrderService {
   private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
