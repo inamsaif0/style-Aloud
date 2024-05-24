@@ -16,19 +16,24 @@ export class OrderController {
   @Post('/create-order')
   // @UseGuards(LocalAuthGuard)
   async createOrder(@Body() createOrderDto: CreateOrderDto,  @Req() req: Request, @Res() res: Response) {
-    return this.orderService.createOrder(createOrderDto, req, res);
-  }
+    try {
+      const data = await this.orderService.createOrder(createOrderDto, req, res);
+      console.log('from controller', data)
+      return ResponseHelper.success({ res, data })
+    } catch (error) {
+      return ResponseHelper.error({ res, req, error })
+    }  }
 
   // @UseInterceptors(FileInterceptor(''))
   // @Post('/get-collection-products-by-id')
   // async myFriends (@Body() createOrderDto: CreateOrderDto, @Req() req: Request, @Res() res: Response) {
-  //   try {
-  //     const data = await this.orderService.createOrder(createOrderDto);
-  //     console.log('from controller', data)
-  //     return ResponseHelper.success({ res, data })
-  //   } catch (error) {
-  //     return ResponseHelper.error({ res, req, error })
-  //   }
+    // try {
+    //   const data = await this.orderService.createOrder(createOrderDto);
+    //   console.log('from controller', data)
+    //   return ResponseHelper.success({ res, data })
+    // } catch (error) {
+    //   return ResponseHelper.error({ res, req, error })
+    // }
   // }
 
 }
