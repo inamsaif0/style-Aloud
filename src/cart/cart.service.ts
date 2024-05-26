@@ -57,7 +57,7 @@
 //   }
 // }
 import { Injectable } from '@nestjs/common';
-import { CreateCartDto, GetCart, IncreaseDecreaseCount } from './dto/create-cart.dto';
+import { CreateCartDto, DeleteCartItem, GetCart, IncreaseDecreaseCount } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { Cart } from 'src/libs/database/entities/cart.entity';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
@@ -169,6 +169,11 @@ export class CartService {
       count: Number(dto.count),
     });
     console.log(data)
+    return data;
+  }
+
+  async deleteItemFromCart(dto:DeleteCartItem) {
+    let data:any = await Cart.query().deleteById(dto.cart_id);
     return data;
   }
 }

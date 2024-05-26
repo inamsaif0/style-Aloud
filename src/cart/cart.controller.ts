@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, Req, Res } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { CreateCartDto, GetCart, IncreaseDecreaseCount } from './dto/create-cart.dto';
+import { CreateCartDto, DeleteCartItem, GetCart, IncreaseDecreaseCount } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { ResponseHelper } from 'src/utils/helper/response.helper';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -44,6 +44,20 @@ export class CartController {
   async incrementDecrementCart(@Body() dto: IncreaseDecreaseCount,  @Req() req: Request, @Res() res: Response ) {
     try{
       let data = await this.cartService.IncrementDecrementCount(dto);
+      return ResponseHelper.success({ res, data })
+
+    }
+    catch(error){
+      return ResponseHelper.error({ res, req, error })
+
+    }
+  }
+
+  @UseInterceptors(FileInterceptor(''))
+  @Post('/delete-from-cart')
+  async deleteItemFromCart(@Body() dto: DeleteCartItem,  @Req() req: Request, @Res() res: Response ) {
+    try{
+      let data = await this.cartService.deleteItemFromCart(dto);
       return ResponseHelper.success({ res, data })
 
     }
