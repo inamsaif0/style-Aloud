@@ -97,7 +97,7 @@ export class ShopifyService {
   async getCollections() {
     const response: any = await this.axiosInstance.get(`/smart_collections.json`);
     // return response.data;
-    const filteredCollections = await this.filterCollectionsByKeyword(response.data, ["girl", "Bedspread", "CHILDRENS", "kitchen-accessories", 'bedding']);
+    const filteredCollections = await this.filterCollectionsByKeyword(response.data, ["girl", "Bedspread", "kids", "kitchen-accessories", 'bedding']);
     return filteredCollections;
   }
 
