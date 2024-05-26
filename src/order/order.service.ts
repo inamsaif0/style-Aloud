@@ -80,7 +80,13 @@ export class OrderService {
       console.log(response.data.order.current_subtotal_price)
       result = response.data
       if(response.data && createOrderDto.is_cart == true){
-        await Cart.query().delete()
+        if(createOrderDto.device_token){
+        await Cart.query().delete().where({device_token:createOrderDto.device_token })
+        }
+        else{
+          await Cart.query().delete().where({device_token:createOrderDto.user_id })
+
+        }
       }
       return result;
     } catch (error) {
