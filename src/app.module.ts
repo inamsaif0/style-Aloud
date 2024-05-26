@@ -23,6 +23,7 @@ import { KlarnaModule } from './klarna/klarna.module';
 import { ReviewModule } from './review/review.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
+// import { PaypalModule } from './paypal/paypal.module';
 
 @Module({
   controllers: [AppController, UsersController, ],

@@ -4,6 +4,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Order } from 'src/libs/database/entities/order.entity';
+import { Cart } from 'src/libs/database/entities/cart.entity';
 @Injectable()
 export class OrderService {
   private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
@@ -62,22 +63,25 @@ export class OrderService {
       const response: AxiosResponse = await this.axiosInstance.post('/orders.json', newOrder);
       let value: any;
       let result:any
-      // if (createOrderDto.device_token) {
-      //   value = await Order.query().insertAndFetch({
-      //     order_id: response.data.order.id,
-      //     device_token: createOrderDto.device_token,
-      //     amount: response.data.current_subtotal_price
-      //   })
-      // }
-      // else {
-      //   value = await Order.query().insertAndFetch({
-      //     order_id: response.data.order.id,
-      //     user_id: createOrderDto.user_id,
-      //     amount: response.data.order.current_subtotal_price
-      //   })
-      // }
+      if (createOrderDto.device_token) {
+        value = await Order.query().insertAndFetch({
+          order_id: response.data.order.id,
+          device_token: createOrderDto.device_token,
+          amount: response.data.current_subtotal_price
+        })
+      }
+      else {
+        value = await Order.query().insertAndFetch({
+          order_id: response.data.order.id,
+          user_id: createOrderDto.user_id,
+          amount: response.data.order.current_subtotal_price
+        })
+      }
       console.log(response.data.order.current_subtotal_price)
       result = response.data
+      if(response.data && createOrderDto.is_cart == true){
+        await Cart.query().delete()
+      }
       return result;
     } catch (error) {
       console.error('Error creating order:', error.response?.data || error.message);

@@ -130,4 +130,7 @@ export class CreateOrderDto {
 
   @IsOptional()
   user_id : number
+
+  @IsOptional()
+  is_cart: boolean
 }
