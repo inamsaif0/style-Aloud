@@ -89,7 +89,7 @@ export class ShopifyService {
     console.log(collections)
     return collections.smart_collections.filter(collection => {
       console.log(collection)
-      const title = collection.handle.toLowerCase();
+      const title = collection.title.toLowerCase();
       console.log(title)
       return keywords.some(keyword => title.includes(keyword.toLowerCase()));
     });
@@ -97,7 +97,7 @@ export class ShopifyService {
   async getCollections() {
     const response: any = await this.axiosInstance.get(`/smart_collections.json`);
     // return response.data;
-    const filteredCollections = await this.filterCollectionsByKeyword(response.data, ["girl", "Bedspread", "kids", "kitchen-accessories", 'bedding']);
+    const filteredCollections = await this.filterCollectionsByKeyword(response.data, ["girl", "kids", 'bedding', 'Alak', 'jiny']);
     return filteredCollections;
   }
 
@@ -108,7 +108,8 @@ export class ShopifyService {
       "Bedding", "Bedspread", "Duvet Cover Set", "Filled Pillows",
       "Fitted Sheet", "Flat Sheet", "Pillowcase", "Throw",
       "Bath linen", "Towels", "Home Accessories", "Curtains",
-      "Cushion Cover", "Filled Cushion", "Kitchen Accessories"
+      "Cushion Cover", "Filled Cushion", "Kitchen Accessories", 
+      "Alapeno"
     ];
 
     const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
