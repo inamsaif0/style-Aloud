@@ -15,15 +15,13 @@ import { FriendsModule } from './friends/friends.module';
 import { NotificationsModule } from './notifications/notifications.module';
 // import { WalletModule } from './wallet/wallet.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-
-
 import { ShopifyModule } from './shopify/shopify.module';
 // import { BillingsModule } from './billings/billings.module';
 import { KlarnaModule } from './klarna/klarna.module';
 import { ReviewModule } from './review/review.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
-// import { PaypalModule } from './paypal/paypal.module';
+import { PaypalModule } from './paypal/paypal.module';
 
 @Module({
   controllers: [AppController, UsersController, ],
@@ -45,6 +43,6 @@ import { OrderModule } from './order/order.module';
     }),
     ConfigModule.forRoot({ isGlobal: true }),
 
-    AuthModule, UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, KlarnaModule, ReviewModule, CartModule, OrderModule ],
+    AuthModule,UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, KlarnaModule, ReviewModule, CartModule, OrderModule, PaypalModule],
 })
 export class AppModule { }

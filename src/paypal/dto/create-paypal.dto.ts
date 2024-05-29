@@ -1,27 +1,79 @@
-import { IsNotEmpty, IsArray, ValidateNested, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, ValidateNested, IsArray, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class LineItemDto {
+class ItemDto {
   @IsNotEmpty()
   @IsString()
-  title: string;
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  quantity: string;
 
   @IsNotEmpty()
   @IsNumber()
-  price: number;
+  unit_amount: {
+    currency_code: string;
+    value: string;
+  };
+}
+
+class AmountDto {
+  @IsNotEmpty()
+  @IsString()
+  currency_code: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  quantity: number;
+  @IsString()
+  value: string;
+
+  @IsOptional()
+  breakdown: {
+    item_total: {
+      currency_code: string;
+      value: string;
+    };
+  };
+}
+
+class PurchaseUnitDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ItemDto)
+  items: ItemDto[];
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => AmountDto)
+  amount: AmountDto;
+}
+
+class ApplicationContextDto {
+  @IsNotEmpty()
+  @IsString()
+  return_url: string;
+
+  @IsNotEmpty()
+  @IsString()
+  cancel_url: string;
 }
 
 export class CreateOrderDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => LineItemDto)
-  line_items: LineItemDto[];
-
   @IsNotEmpty()
   @IsString()
-  currency: string;
+  intent: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PurchaseUnitDto)
+  purchase_units: PurchaseUnitDto[];
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => ApplicationContextDto)
+  application_context: ApplicationContextDto;
 }

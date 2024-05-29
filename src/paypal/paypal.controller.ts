@@ -1,18 +1,32 @@
-// import { Controller, Post, Body, Param } from '@nestjs/common';
-// import { PayPalService } from '../paypal/paypal.service';
-// import { CreateOrderDto } from '../paypal/dto/create-paypal.dto';
+import { Controller, Post, Body, Param, Res, Req } from '@nestjs/common';
+import { PaypalService } from './paypal.service';
+import { ResponseHelper } from 'src/utils/helper/response.helper';
 
-// @Controller('paypal')
-// export class PayPalController {
-//   constructor(private readonly paypalService: PayPalService) {}
+@Controller('/api/paypal')
+export class PaypalController {
+  constructor(private readonly paypalService: PaypalService) {}
 
-//   @Post('create')
-//   createOrder(@Body() createOrderDto: CreateOrderDto) {
-//     return this.paypalService.createOrder(createOrderDto);
-//   }
+  @Post('/create-order')
+  async createOrder(@Body() createOrderDto: any,  @Req() req: Request, @Res() res: Response) {
+    try{
+        let data :any =await this.paypalService.createOrder(createOrderDto);
+        return ResponseHelper.success({ res, data })
 
-//   @Post('capture/:orderId')
-//   captureOrder(@Param('orderId') orderId: string) {
-//     return this.paypalService.captureOrder(orderId);
-//   }
-// }
+    } catch(error){
+        return ResponseHelper.error({ res, req, error })
+
+    }
+  }
+
+  @Post('capture-payment/:orderId')
+  async capturePayment(@Param('orderId') orderId: string, @Req() req: Request, @Res() res: Response) {
+    try{
+        let data:any= await this.paypalService.capturePayment(orderId);
+        return ResponseHelper.success({ res, data })
+
+    } catch(error){
+        return ResponseHelper.error({ res, req, error })
+
+    }
+  }
+}

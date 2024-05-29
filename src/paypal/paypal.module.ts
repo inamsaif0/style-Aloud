@@ -1,9 +1,12 @@
-// import { Module } from '@nestjs/common';
-// import { PayPalService } from '../paypal/paypal.service';
-// import { PayPalController } from '../paypal/paypal.controller';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
+import { PaypalService } from './paypal.service';
+import { PaypalController } from './paypal.controller';
 
-// @Module({
-//   controllers: [PayPalController],
-//   providers: [PayPalService],
-// })
-// export class PaypalModule {}
+@Module({
+  imports: [HttpModule, ConfigModule],
+  providers: [PaypalService],
+  controllers: [PaypalController]
+})
+export class PaypalModule {}

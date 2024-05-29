@@ -1,69 +1,72 @@
-// import { Injectable } from '@nestjs/common';
-// import { ConfigService } from '@nestjs/config';
-// import { CreateOrderDto } from '../paypal/dto/';
-// import  * paypal from 'paypal-rest-sdk';
+import { Injectable, HttpException } from '@nestjs/common';
+import axios from 'axios';
+import { CreateOrderDto } from './dto/create-paypal.dto';
+var dotenv = require('dotenv');
+dotenv.config();
 
-// @Injectable()
-// export class PayPalService {
-//   constructor(private readonly configService: ConfigService) {
-//     paypal.configure({
-//       mode: this.configService.get<string>('PAYPAL_MODE'), // 'sandbox' or 'live'
-//       client_id: this.configService.get<string>('PAYPAL_CLIENT_ID'),
-//       client_secret: this.configService.get<string>('PAYPAL_CLIENT_SECRET'),
-//     });
-//   }
+@Injectable()
+export class PaypalService {
+  private clientId = process.env.PAYPAL_CLIENT_ID;
+  private clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
-//   createOrder(createOrderDto: CreateOrderDto) {
-//     const createPaymentJson = {
-//       intent: 'sale',
-//       payer: {
-//         payment_method: 'paypal',
-//       },
-//       redirect_urls: {
-//         return_url: 'http://return.url',
-//         cancel_url: 'http://cancel.url',
-//       },
-//       transactions: [
-//         {
-//           item_list: {
-//             items: createOrderDto.line_items.map((item) => ({
-//               name: item.title,
-//               price: item.price.toFixed(2),
-//               currency: createOrderDto.currency,
-//               quantity: item.quantity,
-//             })),
-//           },
-//           amount: {
-//             currency: createOrderDto.currency,
-//             total: createOrderDto.line_items
-//               .reduce((sum, item) => sum + item.price * item.quantity, 0)
-//               .toFixed(2),
-//           },
-//           description: 'This is the payment description.',
-//         },
-//       ],
-//     };
+  async getAccessToken(): Promise<string> {
+    const auth = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
 
-//     return new Promise((resolve, reject) => {
-//       paypal.payment.create(createPaymentJson, function (error, payment) {
-//         if (error) {
-//           reject(error);
-//         } else {
-//           resolve(payment);
-//         }
-//       });
-//     });
-//   }
+    try {
+      const response = await axios({
+        method: 'post',
+        url: 'https://api-m.sandbox.paypal.com/v1/oauth2/token',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Basic ${auth}`,
+        },
+        data: 'grant_type=client_credentials',
+      });
 
-//   captureOrder(orderId: string) {
-//     return new Promise((resolve, reject) => {
-//       paypal.payment.execute(orderId, {}, function (error, payment) {
-//         if (error) {
-//           reject(error);
-//         } else {
-//           resolve(payment);
-//         }
-//       });
-//     });
-//   }
-// }
+      return response.data.access_token;
+    } catch (error) {
+      console.error('Error getting access token from PayPal:', error.response?.data || error.message);
+      throw new HttpException('Unable to get access token from PayPal', 500);
+    }
+  }
+
+  async createOrder(createOrderDto: CreateOrderDto): Promise<any> {
+    const accessToken = await this.getAccessToken();
+    
+    const orderData = {
+      intent: createOrderDto.intent,
+      purchase_units: createOrderDto.purchase_units,
+      application_context: createOrderDto.application_context,
+    };
+
+    try {
+      const response = await axios.post('https://api-m.sandbox.paypal.com/v2/checkout/orders', orderData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating order with PayPal:', error.response?.data || error.message);
+      throw new HttpException('Unable to create order with PayPal', 500);
+    }
+  }
+
+  async capturePayment(orderId: string): Promise<any> {
+    const accessToken = await this.getAccessToken();
+
+    try {
+      const response = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`, {}, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error capturing payment with PayPal:', error.response?.data || error.message);
+      throw new HttpException('Unable to capture payment with PayPal', 500);
+    }
+  }
+}
