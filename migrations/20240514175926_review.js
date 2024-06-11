@@ -7,9 +7,11 @@ exports.up = function (knex) {
         .createTable('review', function (table) {
             table.increments('id');
             table.string('user_id', 255).nullable();
+            table.string('device_token', 255).nullable();
             table.string('product_id', 255).nullable();
             table.string('text', 255).nullable();
             table.integer('count', 11).nullable();
+            table.boolean('status').defaultTo(false)
             table.timestamps(true, true);
 
         })

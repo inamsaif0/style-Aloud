@@ -1,15 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ResponseHelper } from 'src/utils/helper/response.helper';
 
 @Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Post()
-  create(@Body() createReviewDto: CreateReviewDto) {
-    return this.reviewService.create(createReviewDto);
+  @Post('/create-review')
+  async create(@Body() createReviewDto: CreateReviewDto,  @Req() req: Request, @Res() res: Response) {
+    try{
+      let data = await this.reviewService.addReview(createReviewDto);
+      return ResponseHelper.success({ res, data })
+
+    }catch(error){
+      return ResponseHelper.error({ res, req, error })
+    }
   }
 
   @Get()

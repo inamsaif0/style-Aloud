@@ -17,6 +17,30 @@ export class OrderService {
     });
   }
   async createOrder(createOrderDto: CreateOrderDto, req, res) {
+ const CustomerData = {
+    customer: {
+      first_name: "Mate",
+      last_name: "seson",
+      email: "lat@example.com",
+      phone: "+15142546024",
+      verified_email: true,
+      addresses: [
+        {
+          address1: "123 Oak St",
+          city: "Ottawa",
+          province: "ON",
+          phone: "555-1212",
+          zip: "123 ABC",
+          last_name: "Lastnameson",
+          first_name: "Mother",
+          country: "CA"
+        }
+      ],
+      password: "newpass",
+      password_confirmation: "newpass",
+      send_email_welcome: false
+    }
+  };
     const newOrder = {
       order: {
         line_items: createOrderDto.line_items.map(item => ({
@@ -58,41 +82,46 @@ export class OrderService {
         },
       },
     };
-
+  
     try {
-      const response: AxiosResponse = await this.axiosInstance.post('/orders.json', newOrder);
-      let value: any;
-      let result:any
-      if (createOrderDto.device_token) {
-        value = await Order.query().insertAndFetch({
-          order_id: response.data.order.id,
-          device_token: createOrderDto.device_token,
-          amount: response.data.current_subtotal_price
-        })
-      }
-      else {
-        value = await Order.query().insertAndFetch({
-          order_id: response.data.order.id,
-          user_id: createOrderDto.user_id,
-          amount: response.data.order.current_subtotal_price
-        })
-      }
-      console.log(response.data.order.current_subtotal_price)
-      result = response.data
-      if(response.data && createOrderDto.is_cart == true){
-        if(createOrderDto.device_token){
-        await Cart.query().delete().where({device_token:createOrderDto.device_token })
+      console.log('CustomerData:', JSON.stringify(CustomerData, null, 2));
+      const customer: AxiosResponse = await this.axiosInstance.post('/customers.json', CustomerData);
+      if (customer) {
+        console.log('Customer created:', customer.data);
+        console.log('NewOrder:', JSON.stringify(newOrder, null, 2));
+        const response: AxiosResponse = await this.axiosInstance.post('/orders.json', newOrder);
+        let value: any;
+        let result: any;
+        // if (createOrderDto.device_token) {
+        //   value = await Order.query().insertAndFetch({
+        //     order_id: response.data.order.id,
+        //     device_token: createOrderDto.device_token,
+        //     amount: response.data.current_subtotal_price,
+        //   });
+        // } else {
+        //   value = await Order.query().insertAndFetch({
+        //     order_id: response.data.order.id,
+        //     user_id: createOrderDto.user_id,
+        //     amount: response.data.order.current_subtotal_price,
+        //   });
+        // }
+        // console.log(response.data.order.current_subtotal_price);
+        // result = response.data;
+        if (response.data && createOrderDto.is_cart === true) {
+          if (createOrderDto.device_token) {
+            await Cart.query().delete().where({ device_token: createOrderDto.device_token });
+          } else {
+            await Cart.query().delete().where({ user_id: createOrderDto.user_id });
+          }
         }
-        else{
-          await Cart.query().delete().where({device_token:createOrderDto.user_id })
-
-        }
+        return result;
       }
-      return result;
+      return "no customer found with this email";
     } catch (error) {
       console.error('Error creating order:', error.response?.data || error.message);
       throw new Error('Could not create order');
     }
   }
+  
 
 }
