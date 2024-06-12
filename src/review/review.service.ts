@@ -42,7 +42,7 @@ export class ReviewService {
 
 
   async getALlReviews(req, res) {
-    let data = await Review.query();
+    let data:any = await Review.query();
     for (const review of data) {
       const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
       review.product_id = response
@@ -51,7 +51,7 @@ export class ReviewService {
     return data;
   }
   async getALlProductReviews(getALlProductReviews: GetAllProductReviews, req, res) {
-    let data = await Review.query().where({
+    let data:any = await Review.query().where({
       product_id: getALlProductReviews.product_id
     });
     for (const review of data) {
