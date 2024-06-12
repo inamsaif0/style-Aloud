@@ -1,45 +1,72 @@
 import { Injectable } from '@nestjs/common';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
+import { AcceptReviewDto, CreateReviewDto, GetAllProductReviews } from './dto/create-review.dto';
 import { Review } from 'src/libs/database/entities/review.entity';
-import { text } from 'stream/consumers';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ReviewService {
+  private shopify: any;
+  private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+  private readonly axiosInstance: AxiosInstance;
+
+  constructor(private readonly configService: ConfigService) {
+    this.axiosInstance = axios.create({
+      baseURL: this.shopifyApiUrl,
+      timeout: 10000,
+    });
+  }
+
+  getShopify() {
+    return this.shopify;
+  }
   async addReview(createReviewDto: CreateReviewDto) {
-    let data:any;
-    if(createReviewDto.user_id){
+    let data: any;
+    if (createReviewDto.user_id) {
       data = await Review.query().insertAndFetch({
-      user_id: createReviewDto.user_id,
+        user_id: createReviewDto.user_id,
+        text: createReviewDto.review,
+        product_id: createReviewDto.product_id,
+        count: createReviewDto.count
+      })
+    }
+    data = await Review.query().insertAndFetch({
+      device_token: createReviewDto.device_token,
       text: createReviewDto.review,
       product_id: createReviewDto.product_id,
       count: createReviewDto.count
     })
-  }
-  data = await Review.query().insertAndFetch({
-    device_token: createReviewDto.device_token,
-    text: createReviewDto.review,
-    product_id: createReviewDto.product_id,
-    count: createReviewDto.count
-  })
 
-  return data;
-}
-
-
-  findAll() {
-    return `This action returns all review`;
+    return data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} review`;
+
+  async getALlReviews(req, res) {
+    let data = await Review.query();
+    for (const review of data) {
+      const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
+      review.product_id = response
+
+    }
+    return data;
+  }
+  async getALlProductReviews(getALlProductReviews: GetAllProductReviews, req, res) {
+    let data = await Review.query().where({
+      product_id: getALlProductReviews.product_id
+    });
+    for (const review of data) {
+      const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
+      review.product_id = response
+
+    }
+    return data;
   }
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
+  async acceptReview(acceptReviewDto: AcceptReviewDto, req, res) {
+    let data = await Review.query().updateAndFetchById(acceptReviewDto.review_id, {
+      status: acceptReviewDto.status
+    })
+    return data
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
-  }
 }

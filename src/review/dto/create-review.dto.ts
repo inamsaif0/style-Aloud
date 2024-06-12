@@ -17,3 +17,17 @@ export class CreateReviewDto {
     @IsNotEmpty()
     device_token: string  
 }
+
+export class GetAllProductReviews {
+    @IsNotEmpty()
+    product_id: string
+}
+
+export class AcceptReviewDto{
+
+    @IsNotEmpty()
+    review_id: string
+
+    @IsNotEmpty()
+    status: boolean
+}

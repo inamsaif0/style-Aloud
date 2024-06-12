@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { CreateReviewDto } from './dto/create-review.dto';
+import { CreateReviewDto, GetAllProductReviews, AcceptReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ResponseHelper } from 'src/utils/helper/response.helper';
 
@@ -19,23 +19,39 @@ export class ReviewController {
     }
   }
 
-  @Get()
-  findAll() {
-    return this.reviewService.findAll();
+  @Get('/get-all-reviews')
+  async findAll(@Body() createReviewDto: CreateReviewDto,  @Req() req: Request, @Res() res: Response) {
+   try{
+    let data:any = this.reviewService.getALlReviews(req, res);
+    return ResponseHelper.success({ res, data })
+
+   }catch(error){
+    return ResponseHelper.error({ res, req, error })
+    
+   }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reviewService.findOne(+id);
-  }
+  @Get('/get-all-reviews-by-product')
+  async findProductReviews(@Body() GetAllProductReviews: GetAllProductReviews,  @Req() req: Request, @Res() res: Response) {
+   try{
+    let data:any = this.reviewService.getALlProductReviews(GetAllProductReviews, req, res);
+    return ResponseHelper.success({ res, data })
 
- @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewService.update(+id, updateReviewDto);
+   }catch(error){
+    return ResponseHelper.error({ res, req, error })
+    
+   }
   }
+  
+  @Post('/accept-reject-review')
+  async acceptRejectReview(@Body() acceptReviewDto: AcceptReviewDto,  @Req() req: Request, @Res() res: Response) {
+    try{
+      let data = await this.reviewService.acceptReview(acceptReviewDto, req, res);
+      return ResponseHelper.success({ res, data })
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewService.remove(+id);
+    }catch(error){
+      return ResponseHelper.error({ res, req, error })
+    }
   }
+ 
 }
