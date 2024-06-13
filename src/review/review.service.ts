@@ -3,6 +3,7 @@ import { AcceptReviewDto, CreateReviewDto, GetAllProductReviews } from './dto/cr
 import { Review } from 'src/libs/database/entities/review.entity';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { stat } from 'fs';
 
 @Injectable()
 export class ReviewService {
@@ -52,14 +53,10 @@ export class ReviewService {
   }
   async getALlProductReviews(getALlProductReviews: GetAllProductReviews, req, res) {
     let data:any = await Review.query().where({
-      product_id: getALlProductReviews.product_id
+      product_id: getALlProductReviews.product_id,
+      status: true
     });
-    for (const review of data) {
-      const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
-      review.product_id = response
 
-    }
-    return data;
   }
 
   async acceptReview(acceptReviewDto: AcceptReviewDto, req, res) {
