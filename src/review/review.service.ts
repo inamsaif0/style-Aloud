@@ -46,7 +46,9 @@ export class ReviewService {
 
   async getALlReviews(req, res) {
     let data:any = await Review.query();
+
     for (const review of data) {
+      console.log('this is product id',review.product_id)
       const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
       review.product_id = response
 
