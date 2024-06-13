@@ -30,6 +30,8 @@ export class ReviewService {
         product_id: createReviewDto.product_id,
         count: createReviewDto.count
       })
+      return data;
+
     }
     data = await Review.query().insertAndFetch({
       device_token: createReviewDto.device_token,
