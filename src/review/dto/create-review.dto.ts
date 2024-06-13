@@ -1,8 +1,8 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateReviewDto {
 
-    @IsNotEmpty()
+    @IsOptional()
     user_id: string
 
     @IsNotEmpty()
@@ -14,7 +14,7 @@ export class CreateReviewDto {
     @IsNotEmpty()
     product_id: string    
     
-    @IsNotEmpty()
+    @IsOptional()
     device_token: string  
 }
 

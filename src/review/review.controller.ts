@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseInterceptors } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto, GetAllProductReviews, AcceptReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ResponseHelper } from 'src/utils/helper/response.helper';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@Controller('review')
+@Controller('/api/review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
+  @UseInterceptors(FileInterceptor(''))
   @Post('/create-review')
   async create(@Body() createReviewDto: CreateReviewDto,  @Req() req: Request, @Res() res: Response) {
     try{
