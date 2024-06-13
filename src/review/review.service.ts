@@ -52,7 +52,7 @@ export class ReviewService {
 
       console.log('this is product id',review.product_id)
       const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
-      review.product_id = response
+      review.product_id = response.data
       console.log(review)
 
     }
