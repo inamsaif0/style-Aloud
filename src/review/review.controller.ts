@@ -22,7 +22,7 @@ export class ReviewController {
   }
 
   @Get('/get-all-reviews')
-  async findAll(@Body() createReviewDto: CreateReviewDto,  @Req() req: Request, @Res() res: Response) {
+  async findAll( @Req() req: Request, @Res() res: Response) {
    try{
     let data:any = this.reviewService.getALlReviews(req, res);
     return ResponseHelper.success({ res, data })
