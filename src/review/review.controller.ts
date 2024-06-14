@@ -20,7 +20,7 @@ export class ReviewController {
       return ResponseHelper.error({ res, req, error })
     }
   }
-
+  @UseInterceptors(FileInterceptor(''))
   @Get('/get-all-reviews')
   async findAll( @Req() req: Request, @Res() res: Response) {
    try{
@@ -33,7 +33,8 @@ export class ReviewController {
    }
   }
 
-  @Get('/get-all-reviews-by-product')
+  @UseInterceptors(FileInterceptor(''))
+  @Post('/get-all-reviews-by-product')
   async findProductReviews(@Body() GetAllProductReviews: GetAllProductReviews,  @Req() req: Request, @Res() res: Response) {
    try{
     let data:any = this.reviewService.getALlProductReviews(GetAllProductReviews, req, res);
@@ -45,6 +46,7 @@ export class ReviewController {
    }
   }
   
+  @UseInterceptors(FileInterceptor(''))
   @Post('/accept-reject-review')
   async acceptRejectReview(@Body() acceptReviewDto: AcceptReviewDto,  @Req() req: Request, @Res() res: Response) {
     try{

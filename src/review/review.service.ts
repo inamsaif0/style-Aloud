@@ -45,19 +45,30 @@ export class ReviewService {
 
 
   async getALlReviews(req, res) {
-    let data:any = await Review.query();
-    let arr = []
-    for (let review of data) {
-      console.log('this is product id',review)
-
-      console.log('this is product id',review.product_id)
-      const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
-      review.product_id = response.data
-      console.log(review)
-      arr.push(review)
+    try {
+      let data: any = await Review.query();
+      let arr = [];
+  
+      // Create an array of promises
+      const promises = data.map(async (review) => {
+        console.log('this is product id', review);
+        console.log('this is product id', review.product_id);
+        const response: AxiosResponse = await this.axiosInstance.get(`/products/${review.product_id}.json`);
+        review.product_id = response.data;
+        console.log(review);
+        return review;
+      });
+  
+      // Wait for all promises to resolve
+      arr = await Promise.all(promises);
+      
+      return arr;
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      res.status(500).send('An error occurred while fetching reviews.');
     }
-    return arr;
   }
+  
   async getALlProductReviews(getALlProductReviews: GetAllProductReviews, req, res) {
     let data:any = await Review.query().where({
       product_id: getALlProductReviews.product_id,
