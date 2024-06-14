@@ -60,6 +60,7 @@ export class ReviewService {
       });
   
       // Wait for all promises to resolve
+      
       arr = await Promise.all(promises);
       
       return arr;

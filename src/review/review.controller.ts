@@ -24,7 +24,7 @@ export class ReviewController {
   @Get('/get-all-reviews')
   async findAll( @Req() req: Request, @Res() res: Response) {
    try{
-    let data:any = this.reviewService.getALlReviews(req, res);
+    let data:any = await this.reviewService.getALlReviews(req, res);
     return ResponseHelper.success({ res, data })
 
    }catch(error){
