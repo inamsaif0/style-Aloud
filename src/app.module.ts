@@ -22,6 +22,7 @@ import { ReviewModule } from './review/review.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { PaypalModule } from './paypal/paypal.module';
+import { FavouriteModule } from './favourite/favourite.module';
 
 @Module({
   controllers: [AppController, UsersController, ],
@@ -43,6 +44,6 @@ import { PaypalModule } from './paypal/paypal.module';
     }),
     ConfigModule.forRoot({ isGlobal: true }),
 
-    AuthModule,UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, KlarnaModule, ReviewModule, CartModule, OrderModule, PaypalModule],
+    AuthModule,UsersModule, SocketsModule, FriendsModule, NotificationsModule, ShopifyModule, KlarnaModule, ReviewModule, CartModule, OrderModule, PaypalModule, FavouriteModule],
 })
 export class AppModule { }
