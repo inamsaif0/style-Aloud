@@ -36,5 +36,7 @@ export class FavouriteService {
       product_id: deleteFavouriteDto.product_id,
       device_token: deleteFavouriteDto.device_token
     })
+    return data;
+    //this is something iwant to hack
   }
 }
