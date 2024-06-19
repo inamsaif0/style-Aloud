@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateFavouriteDto, DeleteFavouriteDto, GetFavouriteDto } from './dto/create-favourite.dto';
 import { UpdateFavouriteDto } from './dto/update-favourite.dto';
 import { Favourite } from 'src/libs/database/entities/favourite.entity';
+import { deepEqual } from 'assert';
 @Injectable()
 export class FavouriteService {
 
@@ -36,7 +37,8 @@ export class FavouriteService {
       product_id: deleteFavouriteDto.product_id,
       device_token: deleteFavouriteDto.device_token
     })
+
     return data;
-    //this is something iwant to hack
+  
   }
 }
