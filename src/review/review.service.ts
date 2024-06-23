@@ -73,7 +73,7 @@ export class ReviewService {
   async getALlProductReviews(getALlProductReviews: GetAllProductReviews, req, res) {
     let data:any = await Review.query().where({
       product_id: getALlProductReviews.product_id,
-      status: true
+      status: 1
     });
 
   }
