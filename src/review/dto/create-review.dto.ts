@@ -14,8 +14,9 @@ export class CreateReviewDto {
     @IsNotEmpty()
     product_id: string    
     
-    @IsOptional()
+    @IsNotEmpty()
     device_token: string  
+    
 }
 
 export class GetAllProductReviews {

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateFavouriteDto {
-    @IsNotEmpty()
+    @IsOptional()
     device_token: string
 
     @IsOptional()
@@ -13,7 +13,7 @@ export class CreateFavouriteDto {
 }
 
 export class GetFavouriteDto {
-    @IsNotEmpty()
+    @IsOptional()
     device_token: string
 
     @IsOptional()
@@ -25,8 +25,10 @@ export class DeleteFavouriteDto {
     @IsNotEmpty()
     product_id: string
 
-
-    @IsNotEmpty()
+    @IsOptional()
     device_token: string
+
+    @IsOptional()
+    user_id: string
 
 }

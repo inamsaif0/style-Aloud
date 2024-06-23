@@ -26,14 +26,27 @@ export class FavouriteService {
   }
 
   async getFavourite(getFavouriteDto: GetFavouriteDto) {
-    let data:any = await Favourite.query().where({
+    let data:any;
+    if(getFavouriteDto.user_id){
+      data= await Favourite.query().where({
+        user_id: getFavouriteDto.user_id
+      })
+    }
+    data = await Favourite.query().where({
       device_token: getFavouriteDto.device_token
     })
 
     return data;
   }
   async deleteFavourite(deleteFavouriteDto: DeleteFavouriteDto){
-    let data:any = await Favourite.query().delete().where({
+    let data:any;
+    if(deleteFavouriteDto.user_id){
+       data = await Favourite.query().delete().where({
+        product_id: deleteFavouriteDto.product_id,
+        user_id: deleteFavouriteDto.user_id
+      })
+    }
+    data= await Favourite.query().delete().where({
       product_id: deleteFavouriteDto.product_id,
       device_token: deleteFavouriteDto.device_token
     })
