@@ -32,10 +32,11 @@ export class FavouriteService {
         user_id: getFavouriteDto.user_id
       })
     }
+    else{
     data = await Favourite.query().where({
       device_token: getFavouriteDto.device_token
     })
-
+  }
     return data;
   }
   async deleteFavourite(deleteFavouriteDto: DeleteFavouriteDto){
