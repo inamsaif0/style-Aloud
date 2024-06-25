@@ -34,7 +34,6 @@ export class FavouriteService {
     }
     //this is data
         else{
-          console.log('this is data')
     data = await Favourite.query().where({
       device_token: getFavouriteDto.device_token
     })

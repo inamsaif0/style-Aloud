@@ -18,6 +18,9 @@ export class CollectionsDto {
 export class ProductDto {
   @IsNotEmpty()
   productId: string
+
+  @IsNotEmpty()
+  device_token: string
 }
 // add-to-cart.dto.ts
 export class AddToCartDto {

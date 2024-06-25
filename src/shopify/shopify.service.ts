@@ -57,6 +57,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { shopifyApi, LATEST_API_VERSION } from '@shopify/shopify-api';
 import { ConfigService } from '@nestjs/config';
 import { CollectionsDto, ProductDto } from './dto/create-shopify.dto';
+import { Favourite } from 'src/libs/database/entities/favourite.entity';
 
 
 @Injectable()
@@ -215,8 +216,16 @@ export class ShopifyService {
   async getProductbyId(dto: ProductDto) {
     try {
       const response: AxiosResponse = await this.axiosInstance.get(`/products/${dto.productId}.json`);
-      console.log(response.data);
-      return response.data;
+      const productData = response.data;
+  
+      const data = await Favourite.query().where({
+        product_id: dto.productId,
+        device_token: dto.device_token
+      });
+  
+      productData.product.isFavourite = data.length > 0;
+  
+      return productData;
     } catch (error) {
       console.error('Error fetching product by ID:', error.message);
       if (error.response) {
@@ -228,6 +237,7 @@ export class ShopifyService {
       throw new Error('Error fetching product by ID');
     }
   }
+  
 
   async authenticateCustomer(credentials: any): Promise<any> {
     // Implement authentication logic using Shopify SDK
