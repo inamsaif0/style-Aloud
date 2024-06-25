@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateFavouriteDto, DeleteFavouriteDto, GetFavouriteDto } from './dto/create-favourite.dto';
 import { UpdateFavouriteDto } from './dto/update-favourite.dto';
 import { Favourite } from 'src/libs/database/entities/favourite.entity';
@@ -21,7 +21,7 @@ export class FavouriteService {
         
       })
       if(check.length > 0){
-        return "Already Exists"
+        throw new HttpException('Already Exists', HttpStatus.BAD_REQUEST);
       }
       data = await Favourite.query().insertAndFetch({
         user_id: createFavouriteDto.user_id,
@@ -32,7 +32,7 @@ export class FavouriteService {
 
     }
     if(check.length > 0){
-      return "Already Exist"
+      throw new HttpException('already Exists', HttpStatus.BAD_REQUEST);
     }
     data = await Favourite.query().insertAndFetch({
       product_id: createFavouriteDto.product_id,
