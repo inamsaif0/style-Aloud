@@ -32,7 +32,9 @@ export class FavouriteService {
         user_id: getFavouriteDto.user_id
       })
     }
-    else{
+    //this is data
+        else{
+          console.log('this is data')
     data = await Favourite.query().where({
       device_token: getFavouriteDto.device_token
     })
