@@ -8,7 +8,21 @@ export class FavouriteService {
 
   async createFavourite(createFavouriteDto: CreateFavouriteDto) {
     let data: any;
+    let check:any = await Favourite.query().where({
+      device_token: createFavouriteDto.device_token,
+      product_id: createFavouriteDto.product_id,
+
+    })
+    console.log(check)
     if (createFavouriteDto.user_id) {
+      let check:any = await Favourite.query().where({
+        user_id: createFavouriteDto.user_id,
+        product_id: createFavouriteDto.product_id,
+        
+      })
+      if(check.length > 0){
+        return "Already Exists"
+      }
       data = await Favourite.query().insertAndFetch({
         user_id: createFavouriteDto.user_id,
         product_id: createFavouriteDto.product_id,
@@ -16,6 +30,9 @@ export class FavouriteService {
       })
       return data;
 
+    }
+    if(check.length > 0){
+      return "Already Exist"
     }
     data = await Favourite.query().insertAndFetch({
       product_id: createFavouriteDto.product_id,
