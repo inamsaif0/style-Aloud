@@ -58,19 +58,21 @@ import { shopifyApi, LATEST_API_VERSION } from '@shopify/shopify-api';
 import { ConfigService } from '@nestjs/config';
 import { CollectionsDto, ProductDto } from './dto/create-shopify.dto';
 import { Favourite } from 'src/libs/database/entities/favourite.entity';
-
-
+import { ConcurrencyLimiter } from 'src/utils/helper/limiter';
 @Injectable()
 export class ShopifyService {
   private shopify: any;
   private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
   private readonly axiosInstance: AxiosInstance;
+  private concurrencyLimiter: ConcurrencyLimiter;
 
   constructor(private readonly configService: ConfigService) {
     this.axiosInstance = axios.create({
       baseURL: this.shopifyApiUrl,
       timeout: 10000,
     });
+    this.concurrencyLimiter = new ConcurrencyLimiter(5); // Set the concurrency limit here
+
   }
 
   getShopify() {
@@ -208,6 +210,7 @@ export class ShopifyService {
     return filteredCollections;
   }
 
+
   private async retryRequest(url: string, retries: number = 3, delay: number = 1000): Promise<AxiosResponse> {
     for (let i = 0; i < retries; i++) {
       try {
@@ -231,10 +234,12 @@ export class ShopifyService {
       const products = productsResponse.data.products;
 
       const productDetailsPromises = products.map((product: any) =>
-        this.retryRequest(`/products/${product.id}.json`).then(response => ({
-          ...product,
-          price: response.data.product.variants[0].price
-        }))
+        this.concurrencyLimiter.run(() =>
+          this.retryRequest(`/products/${product.id}.json`).then(response => ({
+            ...product,
+            price: response.data.product.variants[0].price
+          }))
+        )
       );
 
       const updatedProducts = await Promise.all(productDetailsPromises);
@@ -245,7 +250,6 @@ export class ShopifyService {
       throw error;
     }
   }
-
 
   async getProductbyId(dto: ProductDto) {
     try {
