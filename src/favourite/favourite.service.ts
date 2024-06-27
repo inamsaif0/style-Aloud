@@ -3,8 +3,21 @@ import { CreateFavouriteDto, DeleteFavouriteDto, GetFavouriteDto } from './dto/c
 import { UpdateFavouriteDto } from './dto/update-favourite.dto';
 import { Favourite } from 'src/libs/database/entities/favourite.entity';
 import { deepEqual } from 'assert';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class FavouriteService {
+  private shopify: any;
+  private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+  private readonly axiosInstance: AxiosInstance;
+
+  constructor(private readonly configService: ConfigService) {
+    this.axiosInstance = axios.create({
+      baseURL: this.shopifyApiUrl,
+      timeout: 10000,
+    });
+  }
+  
 
   async createFavourite(createFavouriteDto: CreateFavouriteDto) {
     let data: any;
@@ -42,21 +55,55 @@ export class FavouriteService {
     return data;
   }
 
-  async getFavourite(getFavouriteDto: GetFavouriteDto) {
-    let data:any;
-    if(getFavouriteDto.user_id){
-      data= await Favourite.query().where({
-        user_id: getFavouriteDto.user_id
-      })
+  private async retryRequest(url: string, retries: number = 3, delay: number = 1000): Promise<AxiosResponse> {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await this.axiosInstance.get(url);
+      } catch (error) {
+        if (i === retries - 1 || error.response?.status !== 429) {
+          throw error;
+        }
+        const retryAfter = error.response.headers['retry-after'] ? parseInt(error.response.headers['retry-after'], 10) * 1000 : delay;
+        await new Promise(resolve => setTimeout(resolve, retryAfter));
+        delay *= 2; // Exponential backoff
+      }
     }
-    //this is data
-        else{
-    data = await Favourite.query().where({
-      device_token: getFavouriteDto.device_token
-    })
+    throw new Error('Exceeded maximum retries');
   }
-    return data;
+
+  private async fetchProductDetails(favourites: any[]): Promise<any[]> {
+    const productDetailsPromises = favourites.map((favourite: any) =>
+      this.retryRequest(`/products/${favourite.product_id}.json`).then(response => ({
+        ...favourite,
+        product: response.data.product,
+      }))
+    );
+
+    return Promise.all(productDetailsPromises);
   }
+
+  async getFavourite(getFavouriteDto: GetFavouriteDto): Promise<any> {
+    try {
+      let data: any;
+
+      if (getFavouriteDto.user_id) {
+        data = await Favourite.query().where({
+          user_id: getFavouriteDto.user_id,
+        });
+      } else {
+        data = await Favourite.query().where({
+          device_token: getFavouriteDto.device_token,
+        });
+      }
+
+      return await this.fetchProductDetails(data);
+    } catch (error) {
+      console.error('Error fetching favourites:', error);
+      throw error;
+    }
+  }
+
+
   async deleteFavourite(deleteFavouriteDto: DeleteFavouriteDto){
     let data:any;
     if(deleteFavouriteDto.user_id){
