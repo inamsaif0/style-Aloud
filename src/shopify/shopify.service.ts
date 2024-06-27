@@ -208,10 +208,44 @@ export class ShopifyService {
     return filteredCollections;
   }
 
-  async getCollectionsProducts(dto: CollectionsDto) {
-    const response: AxiosResponse = await this.axiosInstance.get(`/collections/${dto.collectionId}/products.json`);
-    return response.data;
+  private async retryRequest(url: string, retries: number = 3, delay: number = 1000): Promise<AxiosResponse> {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await this.axiosInstance.get(url);
+      } catch (error) {
+        if (i === retries - 1 || error.response?.status !== 429) {
+          throw error;
+        }
+        const retryAfter = error.response.headers['retry-after'] ? parseInt(error.response.headers['retry-after'], 10) * 1000 : delay;
+        await new Promise(resolve => setTimeout(resolve, retryAfter));
+        delay *= 2; // Exponential backoff
+      }
+    }
+    throw new Error('Exceeded maximum retries');
   }
+
+  async getCollectionsProducts(dto: CollectionsDto) {
+    try {
+      const { collectionId } = dto;
+      const productsResponse: AxiosResponse = await this.axiosInstance.get(`/collections/${collectionId}/products.json`);
+      const products = productsResponse.data.products;
+
+      const productDetailsPromises = products.map((product: any) =>
+        this.retryRequest(`/products/${product.id}.json`).then(response => ({
+          ...product,
+          price: response.data.product.variants[0].price
+        }))
+      );
+
+      const updatedProducts = await Promise.all(productDetailsPromises);
+
+      return updatedProducts;
+    } catch (error) {
+      console.error('Error fetching collection products:', error);
+      throw error;
+    }
+  }
+
 
   async getProductbyId(dto: ProductDto) {
     try {
