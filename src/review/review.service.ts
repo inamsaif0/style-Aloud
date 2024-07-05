@@ -46,7 +46,9 @@ export class ReviewService {
 
   async getALlReviews(req, res) {
     try {
-      let data: any = await Review.query().withGraphFetched("user");
+      let data: any = await Review.query().where({
+        status: null
+      }).withGraphFetched("user");
       let arr = [];
   
       // Create an array of promises
@@ -73,7 +75,7 @@ export class ReviewService {
   async getALlProductReviews(getALlProductReviews: GetAllProductReviews, req, res) {
     let data:any = await Review.query().where({
       product_id: getALlProductReviews.product_id,
-      status: true
+      status: "accepted"
     }).withGraphFetched("user")
 
 

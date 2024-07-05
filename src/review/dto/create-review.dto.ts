@@ -30,5 +30,5 @@ export class AcceptReviewDto{
     review_id: string
 
     @IsNotEmpty()
-    status: boolean
+    status: string
 }
