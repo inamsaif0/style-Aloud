@@ -8,6 +8,7 @@ exports.up = function (knex) {
             table.increments('id');
             table.string('user_id', 255).nullable();
             table.string('product_id', 255).nullable();
+            table.string('variant_id', 255).nullable();
             table.string('device_token', 255).nullable();
             table.boolean('is_confirmed').defaultTo(false)
             table.integer('count', 11).defaultTo(0);

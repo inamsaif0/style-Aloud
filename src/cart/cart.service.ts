@@ -88,7 +88,7 @@ export class CartService {
   async addToCart(dto: CreateCartDto) {
 
     if(dto.user_id){
-      const cartItem:any = await Cart.query().where({ product_id: dto.product_id, user_id: dto.user_id }).first();
+      const cartItem:any = await Cart.query().where({ product_id: dto.product_id, user_id: dto.user_id, variant_id: dto.variant_id }).first();
       if(cartItem){
         let data = await Cart.query().updateAndFetchById(cartItem.id, {
           count: Number(cartItem.count) + Number(dto.count)
@@ -100,12 +100,12 @@ export class CartService {
         user_id: dto.user_id,
         product_id: dto.product_id,
         count: Number(dto.count),
-        
+        variant_id: dto.variant_id
       });
       return data;
     }
 
-    const cartItem:any = await Cart.query().where({ product_id: dto.product_id, device_token: dto.device_token }).first();
+    const cartItem:any = await Cart.query().where({ product_id: dto.product_id, device_token: dto.device_token, variant_id: dto.variant_id }).first();
     
     if(cartItem){
       let data = await Cart.query().updateAndFetchById(cartItem.id, {
@@ -117,7 +117,8 @@ export class CartService {
       let data = await Cart.query().insertAndFetch({
         product_id: dto.product_id,
         count: Number(dto.count),
-        device_token: dto.device_token
+        device_token: dto.device_token,
+        variant_id: dto.variant_id
       });
       return data
     }
@@ -151,7 +152,8 @@ export class CartService {
             unitPrice: unitPrice, // Unit price of the product
             totalPrice: totalPrice, // Total price based on quantity
             image: product.images[0]?.src, // Adding the first image URL
-            quantity: quantity // Including the quantity from the cart
+            quantity: quantity, // Including the quantity from the cart,
+            variant_id: val.variant_id
           };
         });
     

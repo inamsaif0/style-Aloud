@@ -5,6 +5,9 @@ export class CreateCartDto {
     @IsNotEmpty()
     product_id: string
 
+    @IsNotEmpty()
+    variant_id: string
+
     @IsOptional()
     user_id: string
 
