@@ -22,6 +22,14 @@ export class ProductDto {
   @IsNotEmpty()
   device_token: string
 }
+
+export class VariantDto {
+  @IsNotEmpty()
+  variantId: string
+
+  @IsNotEmpty()
+  device_token: string
+}
 // add-to-cart.dto.ts
 export class AddToCartDto {
     readonly productId: number;

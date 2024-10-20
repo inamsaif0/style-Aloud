@@ -1,62 +1,11 @@
-// // // shopify.service.ts
-// // import { Injectable } from '@nestjs/common';
 
-// // import { AddToCartDto, CheckoutDto, CollectionsDto } from './dto/create-shopify.dto';
-
-// // @Injectable()
-// // export class ShopifyService {
-//   // private readonly shopifyApiUrl = '';
-// //   private readonly axiosInstance: AxiosInstance;
-
-// //   constructor() {
-// //     this.axiosInstance = axios.create({
-// //       baseURL: this.shopifyApiUrl,
-// //       timeout: 5000,
-// //     });
-// //   }
-// // //get all products
-// //   async getAllProducts() {
-// //     const response: AxiosResponse = await this.axiosInstance.get(`/products.json`);
-// //     return response.data.products;
-// //   }
-
-// //   // get all the collections
-// //   async getCollections() {
-// //     const response: AxiosResponse = await this.axiosInstance.get(`/smart_collections.json`);
-// //     return response.data;
-// //   }
-
-// //   // get all the products of single collection by id 
-// //   async getCollectionsProducts(dto:CollectionsDto) {
-// //     const response: AxiosResponse = await this.axiosInstance.get(`/collections/${dto.collectionId}/products.json`);
-// //     return response.data;
-// //   }
-
-// //   // get all carts
-// //   async getCart(){
-// //     const response: AxiosResponse = await this.axiosInstance.get(`/cart.json`);
-// //     return response.data;
-// //   }
-
-// //   async getRecommendations(){
-// //     // const response: AxiosResponse = await this.axiosInstance.get(`/${locale}/recommendations/products.json?product_id=${product-id}&intent=${intent}`);
-// //     // return response.data;
-// //   }
-
-// //   // checkout 
-// //   async checkout(checkoutDto: CheckoutDto): Promise<any> {
-// //     const response: AxiosResponse = await this.axiosInstance.post('/checkouts.json', { checkout: checkoutDto });
-// //     return response.data;
-// //   }
-
-// // }
 // // shopify.service.ts
 import '@shopify/shopify-api/adapters/node';
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { shopifyApi, LATEST_API_VERSION } from '@shopify/shopify-api';
 import { ConfigService } from '@nestjs/config';
-import { CollectionsDto, ProductDto } from './dto/create-shopify.dto';
+import { CollectionsDto, ProductDto, VariantDto } from './dto/create-shopify.dto';
 import { Favourite } from 'src/libs/database/entities/favourite.entity';
 import { ConcurrencyLimiter } from 'src/utils/helper/limiter';
 @Injectable()
@@ -275,110 +224,36 @@ export class ShopifyService {
       throw new Error('Error fetching product by ID');
     }
   }
+  async getProductByVariantId(dto: VariantDto) {
+    try {
+      // Fetch the product using the variant ID
+      const response: AxiosResponse = await this.axiosInstance.get(`/variants/${dto.variantId}.json`);
+      const productData = response.data;
+  
+      // Query to check if the product variant is marked as a favorite
+      // const data = await Favourite.query().where({
+      //   product_id: productData.id,
+      //   device_token: dto.device_token
+      // });
+  
+      // Mark the variant as a favorite if it is present in the query result
+      // productData.variant.isFavourite = data.length > 0;
+  
+      return productData;
+    } catch (error) {
+      console.error('Error fetching product by variant ID:', error.message);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      }
+      throw new Error('Error fetching product by variant ID');
+    }
+  }
   
 
-  async authenticateCustomer(credentials: any): Promise<any> {
-    // Implement authentication logic using Shopify SDK
-    // You can use OAuth flow for authentication
-    // This typically involves redirecting users to Shopify's authentication endpoint
-    // After successful authentication, Shopify will redirect users back to your app
-    // Your app will receive an access token which you can use for further API requests
-    // You'll need to handle the OAuth flow in your NestJS application
-    // For more details, refer to Shopify's OAuth documentation: https://shopify.dev/tutorials/authenticate-with-oauth
-  }
 
-  async registerCustomer(customerData: any): Promise<any> {
-    try {
-      const query = `mutation {
-        customerCreate(input: {firstName: "${customerData.firstName}", lastName: "${customerData.lastName}", email: "${customerData.email}"}) {
-          customer {
-            id
-            email
-            firstName
-            lastName
-          }
-          userErrors {
-            field
-            message
-          }
-        }
-      }`;
-
-      const response = await this.shopify.send(query);
-      return response;
-    } catch (error) {
-      throw new Error(error.response.errors);
-    }
-  }
-
-  async addToCart(customerId: string, product: any): Promise<any> {
-    try {
-      const query = `mutation {
-        checkoutLineItemsAdd(checkoutId: "${customerId}", lineItems: {quantity: ${product.quantity}, variantId: "${product.variantId}"}) {
-          checkout {
-            id
-            webUrl
-          }
-          checkoutUserErrors {
-            code
-            field
-            message
-          }
-        }
-      }`;
-
-      const response = await this.shopify.send(query);
-      return response;
-    } catch (error) {
-      throw new Error(error.response.errors);
-    }
-  }
-
-  async deleteFromCart(customerId: string, productId: string): Promise<any> {
-    try {
-      const query = `mutation {
-        checkoutLineItemsRemove(checkoutId: "${customerId}", lineItemIds: ["${productId}"]) {
-          checkout {
-            id
-          }
-          checkoutUserErrors {
-            code
-            field
-            message
-          }
-        }
-      }`;
-
-      const response = await this.shopify.send(query);
-      return response;
-    } catch (error) {
-      throw new Error(error.response.errors);
-    }
-  }
-
-  async editCart(customerId: string, cartData: any): Promise<any> {
-    try {
-      const lineItems = cartData.lineItems.map((item: any) => `{quantity: ${item.quantity}, variantId: "${item.variantId}"}`).join(', ');
-
-      const query = `mutation {
-        checkoutLineItemsReplace(checkoutId: "${customerId}", lineItems: [${lineItems}]) {
-          checkout {
-            id
-          }
-          checkoutUserErrors {
-            code
-            field
-            message
-          }
-        }
-      }`;
-
-      const response = await this.shopify.send(query);
-      return response;
-    } catch (error) {
-      throw new Error(error.response.errors);
-    }
-  }
 }
 
 
