@@ -11,13 +11,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         let request: any = ctx.getRequest();
         let exceptionResponse = exception?.response;
         let statusCodeException = exceptionResponse?.statusCode ? exceptionResponse?.statusCode : HttpStatus.BAD_REQUEST
-        if(exception && !exception.response.message){
+        if(exception && !exception?.response?.message){
         await ErrorLogs.query().insertAndFetch({
             user_id: request?.auth?.user?.id ? request?.auth?.user?.id : null,
             method: request?.method,
             status_code: statusCodeException,
             url: request?.url,
-            error: exceptionResponse.response,
+            error: exceptionResponse?.response,
         })
 
         return response.status(statusCodeException).json({
