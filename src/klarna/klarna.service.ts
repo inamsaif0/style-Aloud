@@ -1,35 +1,4 @@
-// import { Injectable } from '@nestjs/common';
-// import Klarna from 'klarna-api';
 
-// @Injectable()
-// export class KlarnaService {
-//   private klarnaClient: any;
-
-//   constructor() {
-//     this.klarnaClient = Klarna.create({
-//       merchantId: process.env.KLARNA_MERCHANT_ID,
-//       sharedSecret: process.env.KLARNA_SHARED_SECRET,
-//       testDrive: true // Set to false for production
-//     });
-//   }
-
-//   async createOrder(orderData: any) {
-//     return this.klarnaClient.createOrder(orderData);
-//   }
-
-//   async captureOrder(orderId: string) {
-//     return this.klarnaClient.captureOrder(orderId);
-//   }
-
-//   async acknowledgeOrder(orderId: string) {
-//     return this.klarnaClient.acknowledgeOrder(orderId);
-//   }
-
-//   async handleCallback(orderId: string, callbackData: any) {
-//     // Process the callback data
-//     // Example: update order status in your database
-//   }
-// }
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
 
