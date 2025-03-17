@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { shopifyApi, LATEST_API_VERSION } from '@shopify/shopify-api';
 import { ConfigService } from '@nestjs/config';
-import { CollectionsDto, ProductDto, VariantDto } from './dto/create-shopify.dto';
+import { CollectionsDto, ProductDto, searchDto, VariantDto } from './dto/create-shopify.dto';
 import { Favourite } from 'src/libs/database/entities/favourite.entity';
 import { ConcurrencyLimiter } from 'src/utils/helper/limiter';
 @Injectable()
@@ -224,6 +224,7 @@ export class ShopifyService {
       throw new Error('Error fetching product by ID');
     }
   }
+
   async getProductByVariantId(dto: VariantDto) {
     try {
       // Fetch the product using the variant ID
@@ -252,8 +253,21 @@ export class ShopifyService {
     }
   }
   
-
-
+  async searchProductsByTitle(dto: { search: string }) {
+    try {
+      const response: AxiosResponse = await this.axiosInstance.get(`/products.json`);
+      const products = response.data.products || [];
+  
+      const regex = new RegExp(dto.search, 'i'); // Case-insensitive search
+      const filteredProducts = products.filter((product: any) => 
+        regex.test(product.title) || regex.test(product.vendor)
+      );  
+      return filteredProducts;
+    } catch (error) {
+      console.error('Error searching products by title:', error);
+      throw new Error('Failed to search products');
+    }
+  }
 }
 
 

@@ -30,6 +30,11 @@ export class VariantDto {
   @IsNotEmpty()
   device_token: string
 }
+
+export class searchDto {
+  @IsNotEmpty()
+  search: string
+}
 // add-to-cart.dto.ts
 export class AddToCartDto {
     readonly productId: number;
