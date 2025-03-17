@@ -8,10 +8,13 @@ import { ConfigService } from '@nestjs/config';
 import { CollectionsDto, ProductDto, searchDto, VariantDto } from './dto/create-shopify.dto';
 import { Favourite } from 'src/libs/database/entities/favourite.entity';
 import { ConcurrencyLimiter } from 'src/utils/helper/limiter';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 @Injectable()
 export class ShopifyService {
   private shopify: any;
-  private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+  private readonly shopifyApiUrl = `https://${process.env.SHOPIFY_API_KEY}:${process.env.SHOPIFY_API_PASSWORD}@${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/${process.env.SHOPIFY_API_VERSION}`;
   private readonly axiosInstance: AxiosInstance;
   private concurrencyLimiter: ConcurrencyLimiter;
 
