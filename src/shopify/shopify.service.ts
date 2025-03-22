@@ -40,24 +40,99 @@ export class ShopifyService {
     });
   }
 
-  async filterCollectionsByKeyword(collections: any, keywords: string[]) {
-    console.log(collections)
-    return collections.smart_collections.filter(collection => {
-      console.log(collection)
-      const title = collection.title.toLowerCase();
-      console.log(title)
-      return keywords.some(keyword => title.includes(keyword.toLowerCase()));
+  async filterCollectionsByKeyword(collections: any, keywords: string[]): Promise<any[]> {
+    if (!collections || !keywords || !Array.isArray(keywords)) {
+      throw new Error("Invalid input: collections or keywords are missing");
+    }
+  
+    // Combine both smart_collections and custom_collections if they exist
+    const allCollections = [
+      ...(collections.smart_collections || []),
+      ...(collections.custom_collections || [])
+    ];
+  
+    return allCollections.filter(collection => {
+      if (!collection || !collection.title) return false; // Ensure collection has a title
+  
+      const title = collection.title.trim().toLowerCase(); // Trim spaces for better accuracy
+      return keywords.some(keyword => {
+        return title.includes(keyword.trim().toLowerCase()); // Match case-insensitive keyword
+      });
     });
   }
-  async getCollections() {
-    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
-    // return response.data;
-    const filteredCollections = await this.filterCollectionsByKeyword(response.data, ["girl", "kids", 'bedding', 'Alak', 'jiny', 'Asale']);
-    return filteredCollections;
+
+  async fetchCollectionsWithPagination(endpoint: string) {
+    let allCollections: any[] = [];
+    let nextPageInfo = null;
+  
+    do {
+      const response: any = await this.axiosInstance.get(endpoint, {
+        params: {
+          limit: 250, // Maximum Shopify allows per page
+          page_info: nextPageInfo, // Cursor-based pagination
+        },
+      });
+  
+      allCollections = allCollections.concat(response.data.smart_collections || response.data.custom_collections || []);
+  
+      // Extract next page info
+      const linkHeader = response.headers['link'];
+      const nextPageMatch = linkHeader?.match(/<([^>]+)>;\s*rel="next"/);
+      nextPageInfo = nextPageMatch ? new URL(nextPageMatch[1]).searchParams.get("page_info") : null;
+  
+    } while (nextPageInfo); // Continue fetching until all pages are retrieved
+  
+    return allCollections;
   }
 
+  async getCollections() {
+    const allowedCollectionIds = [
+      "266097459263", // Sale
+      "263516979263", // Women
+      "263517012031", // Men
+      "263788822591", // Bedding
+      "163319349311", // Kids
+
+    ];
+  
+    try {
+      // Fetch both smart and custom collections
+      const smartCollections = await this.fetchCollectionsWithPagination("/smart_collections.json");
+      const customCollections = await this.fetchCollectionsWithPagination("/custom_collections.json");
+  
+      // Merge collections
+      const allCollections = [...smartCollections, ...customCollections];
+  
+      // Filter collections based on ID
+      const filteredCollections = allCollections.filter(collection =>
+        allowedCollectionIds.includes(collection.id.toString()) // Ensure ID is compared as a string
+      );
+  
+      return allCollections;
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      return [];
+    }
+  }
+  
+
   async getHomeAccessoriess() {
-    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
+    const allowedCollectionIds = [
+      "271908077631", // kitchen-accessories
+      "271907487807", // Bedspread
+      "157179248703", // Duvet Cover Set
+      "271907586111", // Filled Pillows
+      "271907618879", // Fitted Sheet
+      "271907651647", // Flat Sheet
+      "271907749951", // Pillow Case
+      "271907815487", // Throw
+      "271907848255", // Bath linen
+      "157180198975", // Towels
+      "271907946559", // Curtains
+      "271907979327", // Cushion Cover
+      "271908012095", //Filled Cushion
+
+    ];
     const keywords = [
       "kitchen-accessories", "bedding",
       "Bedding", "Bedspread", "Duvet Cover Set", "Filled Pillows",
@@ -67,8 +142,24 @@ export class ShopifyService {
       "Alapeno"
     ];
 
-    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
-    return filteredCollections;
+    try {
+      // Fetch both smart and custom collections
+      const smartCollections = await this.fetchCollectionsWithPagination("/smart_collections.json");
+      const customCollections = await this.fetchCollectionsWithPagination("/custom_collections.json");
+  
+      // Merge collections
+      const allCollections = [...smartCollections, ...customCollections];
+  
+      // Filter collections based on ID
+      const filteredCollections = allCollections.filter(collection =>
+        allowedCollectionIds.includes(collection.id.toString()) // Ensure ID is compared as a string
+      );
+  
+      return filteredCollections;
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      return [];
+    }
   }
 
   async getBeddingAccessories() {
@@ -78,18 +169,60 @@ export class ShopifyService {
       "Fitted Sheet", "Flat Sheet", "Pillowcase",  "Throw",
     ];
 
-    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
-    return filteredCollections;
+    const allowedCollectionIds = [
+      "271907487807", // Bedspread
+      "157179248703", // Duvet Cover Set
+      "271907586111", // Filled Pillows
+      "271907618879", // Fitted Sheet
+      "271907651647", // Flat Sheet
+      "271907749951", // Pillow Case
+      "271907815487", // Throw
+    ];
+
+
+    try {
+      // Fetch both smart and custom collections
+      const smartCollections = await this.fetchCollectionsWithPagination("/smart_collections.json");
+      const customCollections = await this.fetchCollectionsWithPagination("/custom_collections.json");
+  
+      // Merge collections
+      const allCollections = [...smartCollections, ...customCollections];
+  
+      // Filter collections based on ID
+      const filteredCollections = allCollections.filter(collection =>
+        allowedCollectionIds.includes(collection.id.toString()) // Ensure ID is compared as a string
+      );
+  
+      return filteredCollections;
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      return [];
+    }
   }
 
   async getBathLineAccessories() {
-    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
-    const keywords = [
-       "Bath linen"
+    const allowedCollectionIds = [
+       "271907848255" // bath linen
     ];
 
-    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
-    return filteredCollections;
+    try {
+      // Fetch both smart and custom collections
+      const smartCollections = await this.fetchCollectionsWithPagination("/smart_collections.json");
+      const customCollections = await this.fetchCollectionsWithPagination("/custom_collections.json");
+  
+      // Merge collections
+      const allCollections = [...smartCollections, ...customCollections];
+  
+      // Filter collections based on ID
+      const filteredCollections = allCollections.filter(collection =>
+        allowedCollectionIds.includes(collection.id.toString()) // Ensure ID is compared as a string
+      );
+  
+      return filteredCollections;
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      return [];
+    }
   }
   async getHomeAccessories() {
     const response: any = await this.axiosInstance.get(`/smart_collections.json`);
@@ -99,8 +232,30 @@ export class ShopifyService {
       "Filled Cushion"
     ];
 
-    const filteredCollections = await this.filterCollectionsByKeywords(response.data, keywords);
-    return filteredCollections;
+    const allowedCollectionIds = [
+      "271907946559", // Curtains
+      "271907979327", // Cushion Cover
+      "271908012095", //Filled Cushion
+
+    ];
+    try {
+      // Fetch both smart and custom collections
+      const smartCollections = await this.fetchCollectionsWithPagination("/smart_collections.json");
+      const customCollections = await this.fetchCollectionsWithPagination("/custom_collections.json");
+  
+      // Merge collections
+      const allCollections = [...smartCollections, ...customCollections];
+  
+      // Filter collections based on ID
+      const filteredCollections = allCollections.filter(collection =>
+        allowedCollectionIds.includes(collection.id.toString()) // Ensure ID is compared as a string
+      );
+  
+      return filteredCollections;
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      return [];
+    }
   }
   async getKitchenAccessories() {
     const response: any = await this.axiosInstance.get(`/smart_collections.json`);
