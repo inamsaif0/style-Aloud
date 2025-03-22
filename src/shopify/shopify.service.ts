@@ -108,7 +108,7 @@ export class ShopifyService {
         allowedCollectionIds.includes(collection.id.toString()) // Ensure ID is compared as a string
       );
   
-      return allCollections;
+      return filteredCollections;
     } catch (error) {
       console.error("Error fetching collections:", error);
       return [];
