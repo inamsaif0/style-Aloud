@@ -5,9 +5,12 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Order } from 'src/libs/database/entities/order.entity';
 import { Cart } from 'src/libs/database/entities/cart.entity';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 @Injectable()
 export class OrderService {
-  private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+  private readonly shopifyApiUrl = `https://${process.env.SHOPIFY_API_KEY}:${process.env.SHOPIFY_API_PASSWORD}@${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/${process.env.SHOPIFY_API_VERSION}`;
   private readonly axiosInstance: AxiosInstance;
 
   constructor(private readonly configService: ConfigService) {

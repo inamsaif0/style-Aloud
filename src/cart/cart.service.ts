@@ -56,6 +56,8 @@
 
 //   }
 // }
+
+
 import { Injectable } from '@nestjs/common';
 import { CreateCartDto, DeleteCartItem, GetCart, IncreaseDecreaseCount } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
@@ -63,10 +65,12 @@ import { Cart } from 'src/libs/database/entities/cart.entity';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { ProductDto } from 'src/shopify/dto/create-shopify.dto';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class CartService {
-  private readonly shopifyApiUrl = 'https://e102b127e425a798ff2782d6314f18b7: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@fabricforu.myshopify.com/admin/api/2022-10';
+  private readonly shopifyApiUrl = `https://${process.env.SHOPIFY_API_KEY}:${process.env.SHOPIFY_API_PASSWORD}@${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/${process.env.SHOPIFY_API_VERSION}`;
   private readonly axiosInstance: AxiosInstance;
 
   constructor(private readonly configService: ConfigService) {
@@ -80,6 +84,7 @@ export class CartService {
     let data:any = await this.getProductbyId(dto.productId);
     return data
   }
+
   async getProductbyId(productId: any) {
     const response: AxiosResponse = await this.axiosInstance.get(`/products/${productId}.json`);
     return response.data.product; // Ensure only the product data is returned
@@ -125,7 +130,7 @@ export class CartService {
 
     async getCartbyUserId(dto: GetCart) {
       const obj = {
-        user_id: dto.user_id,
+        user_id: dto?.user_id  || null,
         products: []
       };
       
