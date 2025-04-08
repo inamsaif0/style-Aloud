@@ -31,9 +31,9 @@ export class ShopifyService {
     return this.shopify;
   }
   async filterCollectionsByKeywords(collections: any, keywords: string[]) {
-    console.log(collections.length)
-    return collections.smart_collections.filter(collection => {
-      console.log(collection)
+    // console.log(collections)
+    return collections.filter(collection => {
+      // console.log(collection)
       const title = collection.title.toLowerCase();
       console.log(title)
       return keywords.some(keyword => title.includes(keyword.toLowerCase()));
@@ -312,9 +312,68 @@ export class ShopifyService {
       "Xenia Formals",
       "Z. S Textiles"
     ];
-    const response: any = await this.axiosInstance.get(`/smart_collections.json`);
-    const filteredCollections = this.filterCollectionsByKeywords(response.data, collections);
-    return filteredCollections;
+
+    const collectionIds = [
+      "263529037887",
+      "267045634111",
+      "267045601343",
+      "264272511039",
+      "165479153727",
+      "156964782143",
+      "266630299711",
+      "263072022591",
+      "267130568767",
+      "263037255743",
+      "157120692287",
+      "267045699647",
+      "158004314175",
+      "267045732415",
+      "166017433663",
+      "263072055359",
+      "261003706431",
+      "165479252031",
+      "271908339775",
+      "263072088127",
+      "266387324991",
+      "267045765183",
+      "166762545215",
+      "156964585535",
+      "166762577983",
+      "167835172927",
+      "156964716607",
+      "263085457471",
+      "263071957055",
+      "260857331775",
+      "266022518847",
+      "157082910783",
+      "267632214079",
+      "264108671039",
+      "264256847935",
+      "158004510783",
+      "267045797951",
+      "167153270847",
+      "165642305599",
+      "261003313215",
+      "266387488831",
+      "263071924287",
+      "166859440191"
+
+    ]
+      const smartCollections = await this.fetchCollectionsWithPagination("/smart_collections.json");
+      const customCollections = await this.fetchCollectionsWithPagination("/custom_collections.json");
+  
+      // Merge collections
+      const allCollections : any = [...smartCollections, ...customCollections];
+      const filteredCollections = allCollections.filter(collection =>
+        collectionIds.includes(collection.id.toString()) // Ensure ID is compared as a string
+      );
+  
+      return filteredCollections;
+      // return allCollections;
+      // const filteredCollections : any = this.filterCollectionsByKeywords(allCollections, collections);
+      // console.log("this is the length of the list",filteredCollections);
+
+    // return allCollections;
   }
 
 
